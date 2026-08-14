@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SJP Consulting — financial models built to be examined</title>
+<meta name="description" content="Independent modelling and analysis for governments, infrastructure sponsors and banks. Brisbane, Australia.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============ tokens ============ */
+:root{
+  --bg:#F6F2E9; --surface:#FCFAF4; --ink:#1D1B16; --muted:#625D50;
+  --border:#D9D2C0; --accent:#7E2D1E; --accent-2:#3D5A73;
+  --wght-body:400; --wght-display:400;
+  --chart-fill-opacity:0.12; --fan-op:0.14;
+  --serif:"Newsreader",Georgia,"Iowan Old Style","Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,"Cascadia Mono",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1B1913; --surface:#232019; --ink:#ECE6D6; --muted:#A79F8B;
+    --border:#3B372C; --accent:#D89B84; --accent-2:#5E97C4;
+    --wght-body:460; --wght-display:440;
+    --chart-fill-opacity:0.22; --fan-op:0.17;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1B1913; --surface:#232019; --ink:#ECE6D6; --muted:#A79F8B;
+  --border:#3B372C; --accent:#D89B84; --accent-2:#5E97C4;
+  --wght-body:460; --wght-display:440;
+  --chart-fill-opacity:0.22; --fan-op:0.17;
+}
+/* ============ base ============ */
+*{box-sizing:border-box;border-radius:0 !important}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} }
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--serif); font-optical-sizing:auto;
+  font-weight:var(--wght-body); font-size:18px; line-height:30px;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{ background:color-mix(in srgb, var(--accent) 20%, transparent); }
+a{ color:var(--ink); text-decoration:underline; text-underline-offset:3px; text-decoration-thickness:1px; transition:color .12s, border-color .12s, background-color .12s; }
+a:hover{ color:var(--accent); }
+:focus-visible{ outline:1.5px solid var(--accent); outline-offset:2px; }
+h1,h2,h3{ font-weight:500; margin:0; }
+p{ margin:0 0 24px; }
+.wrap{ max-width:1140px; margin:0 auto; padding:0 48px; }
+@media(max-width:720px){ .wrap{ padding:0 24px; } }
+.mono{ font-family:var(--mono); font-variant-numeric:tabular-nums; }
+.klabel{ font-family:var(--mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+.neg{ color:var(--accent); }
+/* double rules */
+.double-rule{ border-top:2px solid var(--ink); border-bottom:1px solid var(--border); height:6px; }
+.double-rule-inv{ border-top:1px solid var(--border); border-bottom:2px solid var(--ink); height:6px; }
+/* ============ masthead ============ */
+.masthead-band{ padding-top:24px; }
+.masthead{ display:flex; align-items:center; justify-content:space-between; height:72px; border-bottom:1px solid var(--border); gap:16px; flex-wrap:wrap; }
+.wordmark{ font-family:var(--serif); font-weight:600; font-size:20px; color:var(--ink); text-decoration:none; }
+.wordmark:hover{ color:var(--ink); }
+nav.top{ display:flex; align-items:center; gap:28px; flex-wrap:wrap; }
+nav.top a, .theme-toggle{
+  font-family:var(--mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--muted); text-decoration:none;
+}
+nav.top a:hover, nav.top a:focus-visible, .theme-toggle:hover{
+  color:var(--accent); text-decoration:underline; text-underline-offset:4px; text-decoration-thickness:1px;
+}
+.theme-toggle{ background:none; border:none; border-left:1px solid var(--border); cursor:pointer; padding:0 0 0 28px; }
+@media(max-width:720px){ .masthead{ height:auto; padding:14px 0; } nav.top{ gap:18px; } }
+/* ============ hero ============ */
+.hero{ padding-top:96px; }
+.kicker{ font-family:var(--mono); font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+.hero h1{
+  margin-top:24px; font-size:clamp(46px,6vw,84px); line-height:1.05; letter-spacing:-0.01em;
+  font-weight:var(--wght-display); max-width:10.5em;
+}
+@media(max-width:720px){ .hero h1{ font-size:clamp(38px,10vw,46px); } .h1br{ display:none; } }
+.hero .subhead{
+  margin-top:32px; font-size:20px; line-height:32px; color:var(--muted); max-width:46ch; font-weight:var(--wght-body);
+}
+.fact-strip{
+  margin-top:24px; font-family:var(--mono); font-size:12px; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--muted); line-height:22px;
+}
+.hero-links{ margin-top:40px; display:flex; gap:40px; }
+.hero-links a{ font-size:18px; font-weight:500; }
+.ex-block{ margin-top:64px; }
+.ex-caption{ font-family:var(--mono); font-size:12px; color:var(--muted); margin-top:12px; }
+svg.ex1{ display:block; width:100%; height:auto; }
+/* exhibit svg classes */
+.fan-line{ fill:none; stroke:var(--ink); stroke-width:1; opacity:var(--fan-op); }
+.fan-median{ fill:none; stroke:var(--accent); stroke-width:1.5; }
+.zero{ stroke:var(--border); stroke-width:1; stroke-dasharray:2 3; }
+.ax{ font-family:var(--mono); font-size:12px; fill:var(--muted); font-variant-numeric:tabular-nums; }
+svg .neg{ fill:var(--accent); }
+svg.ex1.ex-m, svg.ex2.ex-m{ display:none; }
+@media(max-width:720px){ svg.ex1.ex-d, svg.ex2.ex-d{ display:none; } svg.ex1.ex-m, svg.ex2.ex-m{ display:block; width:100%; height:auto; } .ex-m .ax{ font-size:14px; } .ex-m .plabel{ font-size:14px; } .ex-m .cdf-tag{ font-size:14px; } }
+.grid{ stroke:var(--border); stroke-width:1; opacity:.6; }
+.baseline{ stroke:var(--ink); stroke-width:1; opacity:.4; }
+.hist-fill{ fill:var(--accent); opacity:var(--chart-fill-opacity); stroke:none; }
+.hist-line{ fill:none; stroke:var(--accent); stroke-width:1.5; }
+.cdf{ fill:none; stroke:var(--accent-2); stroke-width:1.25; }
+.prule{ stroke:var(--ink); stroke-width:1; stroke-dasharray:3 2; }
+.zrule{ stroke:var(--border); stroke-width:1; }
+.plabel{ font-family:var(--mono); font-size:13px; fill:var(--ink); }
+.cdf-tag{ font-family:var(--mono); font-size:13px; fill:var(--accent-2); }
+/* ============ sections ============ */
+section{ padding:112px 0 96px; }
+@media(max-width:720px){ section{ padding:72px 0 64px; } }
+.sec-head{ display:flex; align-items:baseline; gap:16px; margin-bottom:48px; }
+.sec-head .no{ font-family:var(--mono); font-size:12px; color:var(--muted); white-space:nowrap; }
+.sec-head h2{ font-size:30px; line-height:38px; white-space:nowrap; }
+.sec-head .rule{ flex:1; border-top:1px solid var(--border); transform:translateY(-6px); }
+@media(max-width:720px){ .sec-head h2{ white-space:normal; font-size:26px; } }
+/* practice columns */
+.practice{ display:grid; grid-template-columns:1fr 1fr 1fr; }
+.practice > div{ padding-right:40px; }
+.practice > div + div{ border-left:1px solid var(--border); padding-left:40px; }
+.practice .idx{ font-family:var(--mono); font-size:12px; color:var(--muted); }
+.practice h3{ font-size:22px; line-height:30px; margin:20px 0 16px; }
+.practice p{ font-size:16px; line-height:26px; margin:0 0 16px; }
+.practice a{ font-size:16px; }
+@media(max-width:900px){
+  .practice{ grid-template-columns:1fr; }
+  .practice > div{ padding:32px 0; }
+  .practice > div + div{ border-left:none; border-top:1px solid var(--border); padding-left:0; }
+  .practice > div:first-child{ padding-top:0; }
+}
+/* ============ ledger ============ */
+.ledger-note{ text-align:right; font-family:var(--mono); font-size:12px; color:var(--muted); margin-bottom:12px; }
+table.ledger{ width:100%; border-collapse:separate; border-spacing:0; }
+table.ledger th{
+  font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--muted); font-weight:400; text-align:left; padding:0 0 10px;
+}
+table.ledger th{ border-bottom:2px solid var(--ink); }
+table.ledger tbody::before{ content:""; display:table-row; height:3px; }
+table.ledger td{ padding:16px 0; vertical-align:top; border-bottom:1px solid var(--border); }
+table.ledger tbody tr:hover{ background:var(--surface); }
+td.f{ width:120px; font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); padding-top:20px !important; }
+td.e .name{ font-weight:500; font-size:18px; line-height:26px; }
+td.e .detail{ font-size:15px; line-height:24px; color:var(--muted); margin-top:4px; }
+td.o{ width:110px; text-align:right; font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); padding-top:20px !important; }
+.ledger-foot{ font-family:var(--mono); font-size:12px; color:var(--muted); margin-top:16px; }
+@media(max-width:720px){
+  table.ledger, table.ledger tbody{ display:block; width:100%; }
+  table.ledger thead, table.ledger tbody::before{ display:none; }
+  table.ledger tr{ display:flex; flex-wrap:wrap; padding:16px 0; border-bottom:1px solid var(--border); }
+  table.ledger td{ display:block; border-bottom:none; padding:0; }
+  td.f{ width:auto; order:1; padding:0 !important; }
+  td.o{ width:auto; order:2; margin-left:auto; text-align:right; padding:0 !important; }
+  td.e{ width:100%; order:3; padding:8px 0 0 !important; }
+}
+/* ============ model band ============ */
+.model-band{ background:var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+.model-head{ font-family:var(--mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:48px; }
+.model-grid{ display:grid; grid-template-columns:340px 1fr; gap:48px; }
+@media(max-width:900px){ .model-grid{ grid-template-columns:1fr; } .model-grid .chart-col{ order:-1; } }
+.ctl{ margin-bottom:28px; }
+.ctl .lab{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; }
+.ctl .lab .n{ font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+.ctl .lab .v{ font-family:var(--mono); font-size:14px; color:var(--ink); }
+input[type=range]{ -webkit-appearance:none; appearance:none; width:100%; height:20px; background:transparent; cursor:pointer; margin:0; }
+input[type=range]::-webkit-slider-runnable-track{ height:2px; background:var(--border); }
+input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; width:12px; height:12px; background:var(--ink); margin-top:-5px; }
+input[type=range]::-moz-range-track{ height:2px; background:var(--border); }
+input[type=range]::-moz-range-thumb{ width:12px; height:12px; background:var(--ink); border:none; border-radius:0; }
+.run-btn{
+  font-family:var(--mono); font-size:13px; letter-spacing:.08em; text-transform:uppercase;
+  background:none; border:1px solid var(--ink); color:var(--ink); padding:12px 20px; cursor:pointer;
+  transition:background-color .12s, color .12s; margin-top:8px;
+}
+.run-btn:hover{ background:var(--ink); color:var(--bg); }
+svg.ex2{ display:block; width:100%; height:auto; }
+.results{ margin-top:20px; }
+.results .big{ font-family:var(--mono); font-weight:500; font-size:32px; line-height:40px; }
+.results .line{ font-family:var(--mono); font-size:13px; line-height:24px; color:var(--ink); margin-top:6px; }
+.results .close{ margin-top:14px; }
+.method{ font-size:16px; line-height:26px; color:var(--muted); margin-top:24px; max-width:640px; }
+.method .mono-note{ font-family:var(--mono); font-size:12px; color:var(--muted); }
+/* ============ elsewhere ============ */
+.else-grid{ display:grid; grid-template-columns:7fr 5fr; gap:48px; }
+@media(max-width:800px){ .else-grid{ grid-template-columns:1fr; } }
+.else-grid h3{ font-size:24px; margin-bottom:8px; }
+.else-grid .desc{ font-size:17px; line-height:27px; margin-bottom:6px; }
+.murl{ font-family:var(--mono); font-size:12px; color:var(--muted); }
+.blog-list{ margin-top:40px; }
+.blog-list .bh{ font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:16px; }
+.blog-list a{ font-style:italic; font-size:19px; }
+.blog-list .row{ margin-bottom:14px; }
+.blog-list .d{ font-family:var(--mono); font-size:11px; color:var(--muted); margin-left:12px; }
+.idx-list .row{ border-top:1px solid var(--border); padding:24px 0; }
+.idx-list .row:last-child{ border-bottom:1px solid var(--border); }
+.idx-list .nm{ font-weight:500; font-size:18px; }
+.idx-list .cl{ font-size:15px; color:var(--muted); margin:2px 0 4px; }
+/* ============ about ============ */
+.about-grid{ display:grid; grid-template-columns:6fr 1fr 5fr; }
+.about-grid .prose{ max-width:640px; }
+.facts{ background:var(--surface); border:1px solid var(--border); padding:24px; align-self:start; }
+.facts .t{ font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); padding-bottom:12px; border-bottom:1px solid var(--border); }
+.facts .row{ display:flex; gap:16px; padding:12px 0; border-bottom:1px solid var(--border); }
+.facts .row:last-child{ border-bottom:none; padding-bottom:0; }
+.facts .k{ font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); width:76px; flex-shrink:0; padding-top:3px; }
+.facts .v{ font-size:16px; line-height:24px; }
+@media(max-width:800px){ .about-grid{ grid-template-columns:1fr; } .about-grid .gap{ display:none; } .facts{ margin-top:48px; } }
+/* ============ contact ============ */
+.contact{ text-align:center; padding-top:128px; }
+.closing{ font-size:clamp(28px,3.5vw,40px); line-height:1.25; font-weight:500; max-width:20em; margin:0 auto; }
+.contact .rule-wrap{ max-width:1044px; margin:48px auto 32px; }
+.corr{ font-family:var(--mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+.email{ display:inline-block; margin-top:20px; font-size:34px; font-weight:400; }
+.phone{ font-family:var(--mono); font-size:15px; margin-top:16px; color:var(--ink); }
+.loc{ font-size:16px; color:var(--muted); margin-top:8px; }
+.colophon{ margin-top:64px; padding-bottom:48px; font-family:var(--mono); font-size:11px; line-height:20px; color:var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="wrap masthead-band">
+  <div class="double-rule"></div>
+  <header class="masthead">
+    <a class="wordmark" href="#top">SJP Consulting</a>
+    <nav class="top" id="topnav">
+      <a href="#practice">Practice</a>
+      <a href="#work">Work</a>
+      <a href="#model">Model</a>
+      <a href="#elsewhere">Elsewhere</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+</div>
+
+<div class="wrap hero" id="top">
+  <p class="kicker">Brisbane, Australia · Corporate finance · Analytics · Risk</p>
+  <h1>Financial models built <br class="h1br">to be examined.</h1>
+  <p class="subhead">Independent modelling and analysis for governments, infrastructure sponsors and banks. Thirty years of business cases, risk systems and investment-grade models.</p>
+  <p class="fact-strip">Expressways · Ports · Prisons · Ferries · Rail bids · Basel II · IFRS 9 · APRA ICAAP · Treasury FRR</p>
+  <div class="hero-links">
+    <a href="#work">Selected work</a>
+    <a href="#contact">Get in touch</a>
+  </div>
+  <div class="ex-block">
+    <!--EXHIBIT1D-->
+    <!--EXHIBIT1M-->
+    <p class="ex-caption">Exhibit 1 — Cumulative NPV percentile paths over 12 years, 10,000 trials, default assumptions. The live model is Exhibit 2, below.</p>
+  </div>
+
+  </div>
+
+<section id="practice">
+  <div class="wrap">
+    <div class="sec-head"><span class="no">No. 01</span><h2>Practice</h2><span class="rule"></span></div>
+    <div class="practice">
+      <div>
+        <span class="idx">01</span>
+        <h3>Corporate finance and business cases</h3>
+        <p>Business cases, delivery-options analyses, tolling and patronage models, bid models, hurdle-rate reviews. Investment-grade DCF models with assumption books, documented so a board, lender or Treasury reviewer can open a cell and see how a number was built. Mergers, acquisitions and restructures.</p>
+        <a href="#work">See the work</a>
+      </div>
+      <div>
+        <span class="idx">02</span>
+        <h3>Advanced analytics and machine learning</h3>
+        <p>Data and risk analytics in R and Python: classification, regression, time series, Monte Carlo simulation. Delivered through Quarto, Shiny and Power BI over SQL. The modelling is now heavily AI-assisted, under a gated process: specify and verify before any code is written, test before anything ships.</p>
+        <a href="#work">See the work</a>
+      </div>
+      <div>
+        <span class="idx">03</span>
+        <h3>Risk and project finance</h3>
+        <p>PPP and project finance models. Simulation-based risk analysis, QRA and SRA cost-risk analytics. Financial-institution risk: regulatory capital and credit systems under the Basel framework, IFRS 9 provisioning, ICAAP stress testing, liquidity and capital.</p>
+        <a href="#work">See the work</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="work">
+  <div class="wrap">
+    <div class="sec-head"><span class="no">No. 02</span><h2>Selected work</h2><span class="rule"></span></div>
+    <p class="ledger-note">Selected engagements, 1990s to now.†</p>
+    <!-- PERIOD COLUMN: REPLACE_WITH_VERIFIED_DATES -->
+    <table class="ledger">
+      <thead>
+        <tr><th scope="col">Field</th><th scope="col">Engagement</th><th scope="col" style="text-align:right">Output</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="f">Infrastructure</td><td class="e"><div class="name">Brisbane expressway, bridge and water projects</div><div class="detail">Financial models for delivery and funding decisions.</div></td><td class="o">Model</td></tr>
+        <tr><td class="f">Banking</td><td class="e"><div class="name">IFRS 9 provisioning system</div><div class="detail">Built as an Azure and R web application for an overseas credit agency.</div></td><td class="o">System</td></tr>
+        <tr><td class="f">Transport</td><td class="e"><div class="name">Ferry operations, Brisbane and Dubai Creek</div><div class="detail">Operating and financial analysis for council and overseas operators.</div></td><td class="o">Analysis</td></tr>
+        <tr><td class="f">Government</td><td class="e"><div class="name">Queensland Treasury FRR financial statements model</div><div class="detail">Excel, VBA and Power Query, under the Financial Reporting Requirements.</div></td><td class="o">Model</td></tr>
+        <tr><td class="f">Banking</td><td class="e"><div class="name">APRA CPS 226 swaps margining</div><div class="detail">Initial-margin compliance for non-centrally cleared derivatives.</div></td><td class="o">System</td></tr>
+        <tr><td class="f">Infrastructure</td><td class="e"><div class="name">Correctional facility evaluation</div><div class="detail">Delivery options and financial evaluation.</div></td><td class="o">Evaluation</td></tr>
+        <tr><td class="f">Corporate</td><td class="e"><div class="name">Finance Director, medical-device startup</div><div class="detail">Forecasts for Information Memoranda; finance function built out, Xero to NetSuite.</div></td><td class="o">FD role</td></tr>
+        <tr><td class="f">Transport</td><td class="e"><div class="name">Rail bid models and sourcing strategies</div><div class="detail">Procurement-side models and sourcing evaluation.</div></td><td class="o">Model</td></tr>
+        <tr><td class="f">Banking</td><td class="e"><div class="name">Basel II credit risk system</div><div class="detail">APRA-compliant PD, LGD and expected-loss framework.</div></td><td class="o">System</td></tr>
+        <tr><td class="f">Energy</td><td class="e"><div class="name">Sugar mill cogeneration PPP</div></td><td class="o">Model</td></tr>
+        <tr><td class="f">Infrastructure</td><td class="e"><div class="name">Port of Townsville commercial facilities options</div></td><td class="o">Analysis</td></tr>
+        <tr><td class="f">Banking</td><td class="e"><div class="name">APRA ICAAP stress testing</div><div class="detail">Capital stress testing for an Australian mutual.</div></td><td class="o">Analysis</td></tr>
+      </tbody>
+    </table>
+    <p class="ledger-foot">† n = 12 of a longer record. Some clients prefer their models stay private. References on request.</p>
+  </div>
+</section>
+
+<section id="model" class="model-band">
+  <div class="wrap">
+    <div class="sec-head"><span class="no">No. 03</span><h2>The model</h2><span class="rule"></span></div>
+    <p class="model-head">Live model — Monte Carlo NPV · 10,000 trials · Client-side, no data leaves the page</p>
+    <div class="model-grid">
+      <div class="form-col">
+        <div class="ctl">
+          <div class="lab"><span class="n">Capex</span><span class="v" id="v-capex">$1.60m</span></div>
+          <input type="range" id="in-capex" min="800000" max="3000000" step="50000" value="1600000" aria-label="Capital expenditure">
+        </div>
+        <div class="ctl">
+          <div class="lab"><span class="n">Revenue growth</span><span class="v" id="v-growth">2.50%</span></div>
+          <input type="range" id="in-growth" min="0" max="6" step="0.25" value="2.5" aria-label="Revenue growth per annum">
+        </div>
+        <div class="ctl">
+          <div class="lab"><span class="n">Discount rate</span><span class="v" id="v-rate">10.00%</span></div>
+          <input type="range" id="in-rate" min="6" max="14" step="0.25" value="10" aria-label="Discount rate">
+        </div>
+        <div class="ctl">
+          <div class="lab"><span class="n">Volatility</span><span class="v" id="v-vol">28.00%</span></div>
+          <input type="range" id="in-vol" min="10" max="45" step="1" value="28" aria-label="Revenue volatility">
+        </div>
+        <button class="run-btn" id="run" hidden>Run 10,000 trials</button>
+        <noscript><p class="mono-note klabel" style="margin-top:16px">Static run shown. The interactive version requires JavaScript.</p></noscript>
+      </div>
+      <div class="chart-col">
+        <div id="ex2-slot"><!--EXHIBIT2D--><!--EXHIBIT2M--></div>
+        <div class="results" id="results" aria-live="polite" aria-atomic="true">
+          <div class="big" id="r-median"><!--R_MEDIAN--></div>
+          <div class="line" id="r-line"><!--R_LINE--></div>
+          <div class="double-rule-inv close"></div>
+        </div>
+        <p class="ex-caption">Exhibit 2 — NPV distribution under correlated cost and revenue uncertainty. Method notes below.</p>
+      </div>
+    </div>
+    <p class="method">This is a small version of how projects get tested before anyone signs anything: put distributions on what you don't know, run the model ten thousand times, and read the spread of outcomes it produces. <span class="mono-note">Method — revenue and cost draw correlated normal shocks each year (Cholesky, ρ = 0.45; cost volatility 18%); both grow at the revenue growth rate over 12 years; cash flows discount at the chosen rate. Shock multipliers floor at zero, so revenue and cost cannot go negative. Seeded PRNG (Mulberry32, seed 42): the default run reproduces exactly, every time.</span></p>
+  </div>
+</section>
+
+<section id="elsewhere">
+  <div class="wrap">
+    <div class="sec-head"><span class="no">No. 04</span><h2>Elsewhere</h2><span class="rule"></span></div>
+    <div class="else-grid">
+      <div>
+        <h3><a href="https://www.cblanalytics.com">CBL Analytics</a></h3>
+        <p class="desc">The productised side of the practice. Company financial analysis extracted from SEC EDGAR filings, with source verification throughout.</p>
+        <p class="murl">cblanalytics.com</p>
+        <div class="blog-list">
+          <p class="bh">From the blog</p>
+          <div class="row"><a href="https://blog.cblanalytics.com/posts/2026-08-06-tropic-ridge-qra-sra/index.html">“Pricing Construction Risk — QRA and SRA analytics”</a><span class="d">AUG 2026</span></div>
+          <div class="row"><a href="https://blog.cblanalytics.com/posts/2026-07-31-a-model-you-can-regenerate/index.html">“A Model You Can Regenerate”</a><span class="d">JUL 2026</span></div>
+          <div class="row"><a href="https://blog.cblanalytics.com/posts/2026-01-09-vibe-analyst/index.html">“The Rise of the Vibe Analyst”</a><span class="d">JAN 2026</span></div>
+        </div>
+      </div>
+      <div class="idx-list">
+        <div class="row">
+          <div class="nm"><a href="https://github.com/spinbris">GitHub</a></div>
+          <div class="cl">Model engines and apps in R, Python and the odd Next.js.</div>
+          <div class="murl">github.com/spinbris</div>
+        </div>
+        <div class="row">
+          <div class="nm"><a href="https://www.kaggle.com/spinbris">Kaggle</a></div>
+          <div class="cl">Data-science projects and competitions.</div>
+          <div class="murl">kaggle.com/spinbris</div>
+        </div>
+        <div class="row">
+          <div class="nm"><a href="https://www.linkedin.com/in/stephen-parton-2737594/">LinkedIn</a></div>
+          <div class="cl">The long CV.</div>
+          <div class="murl">linkedin.com/in/stephen-parton-2737594</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap">
+    <div class="sec-head"><span class="no">No. 05</span><h2>About</h2><span class="rule"></span></div>
+    <div class="about-grid">
+      <div class="prose">
+        <p>I'm Steve Parton, a chartered accountant and MBA with thirty years in finance, banking and analytics. I've built the models and business cases behind big infrastructure decisions: expressways, bridges and water projects, ports, prisons, ferries in Brisbane and Dubai Creek, rail bids, a sugar mill cogeneration PPP. Later the work moved into banking risk and public-sector reporting: Basel II credit systems, IFRS 9 provisioning, ICAAP stress testing, Queensland Treasury financial statements.</p>
+        <p>The toolkit grew with the work. Excel and VBA first, because that's where finance lives; then R, Python, SQL and Power BI; now Quarto and Shiny for delivery. Three things never changed: assumptions written down, results that reproduce, and a model someone else can open and check.</p>
+        <p>These days the modelling team includes several Claudes. The judgement, and the review standards, are still mine.</p>
+      </div>
+      <div class="gap"></div>
+      <aside class="facts">
+        <p class="t">Notes</p>
+        <div class="row"><span class="k">Based</span><span class="v">Brisbane, Australia</span></div>
+        <div class="row"><span class="k">Practice</span><span class="v">SJP Consulting</span></div>
+        <div class="row"><span class="k">Status</span><span class="v">Taking engagements</span></div>
+        <div class="row"><span class="k">Tools</span><span class="v">Excel and VBA, R, Python, SQL, Power BI, Quarto, Shiny</span></div>
+        <div class="row"><span class="k">Also</span><span class="v">CBL Analytics — productised analysis apps</span></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="contact">
+  <div class="wrap">
+    <p class="closing">If the decision matters, the model should hold up.</p>
+    <div class="rule-wrap"><div class="double-rule-inv"></div></div>
+    <p class="corr">Correspondence</p>
+    <a class="email" href="mailto:stephen.parton@sjpconsulting.com">stephen.parton@sjpconsulting.com</a>
+    <p class="phone"><a href="tel:+61412338370" style="text-decoration:none">+61 412 338 370</a></p>
+    <p class="loc">Brisbane, Australia</p>
+    <p class="colophon">SJP Consulting · Brisbane, Australia · ABN 97 543 127 136<br>
+    Set in Newsreader and IBM Plex Mono. Static exhibits generated by the same seeded engine that runs live. No framework, no analytics, readable without JavaScript. © 2026 SJP Consulting.</p>
+  </div>
+</section>
+
+<script>
+/*ENGINE*/
+</script>
+<script>
+/*UI*/
+</script>
+</body>
+</html>

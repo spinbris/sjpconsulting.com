@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SJP Consulting — financial models built to be examined</title>
+<meta name="description" content="Independent modelling and analysis for governments, infrastructure sponsors and banks. Brisbane, Australia.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============ tokens ============ */
+:root{
+  --bg:#F6F2E9; --surface:#FCFAF4; --ink:#1D1B16; --muted:#625D50;
+  --border:#D9D2C0; --accent:#7E2D1E; --accent-2:#3D5A73;
+  --wght-body:400; --wght-display:400;
+  --chart-fill-opacity:0.12; --fan-op:0.14;
+  --serif:"Newsreader",Georgia,"Iowan Old Style","Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,"Cascadia Mono",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1B1913; --surface:#232019; --ink:#ECE6D6; --muted:#A79F8B;
+    --border:#3B372C; --accent:#D89B84; --accent-2:#5E97C4;
+    --wght-body:460; --wght-display:440;
+    --chart-fill-opacity:0.22; --fan-op:0.17;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1B1913; --surface:#232019; --ink:#ECE6D6; --muted:#A79F8B;
+  --border:#3B372C; --accent:#D89B84; --accent-2:#5E97C4;
+  --wght-body:460; --wght-display:440;
+  --chart-fill-opacity:0.22; --fan-op:0.17;
+}
+/* ============ base ============ */
+*{box-sizing:border-box;border-radius:0 !important}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} }
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--serif); font-optical-sizing:auto;
+  font-weight:var(--wght-body); font-size:18px; line-height:30px;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{ background:color-mix(in srgb, var(--accent) 20%, transparent); }
+a{ color:var(--ink); text-decoration:underline; text-underline-offset:3px; text-decoration-thickness:1px; transition:color .12s, border-color .12s, background-color .12s; }
+a:hover{ color:var(--accent); }
+:focus-visible{ outline:1.5px solid var(--accent); outline-offset:2px; }
+h1,h2,h3{ font-weight:500; margin:0; }
+p{ margin:0 0 24px; }
+.wrap{ max-width:1140px; margin:0 auto; padding:0 48px; }
+@media(max-width:720px){ .wrap{ padding:0 24px; } }
+.mono{ font-family:var(--mono); font-variant-numeric:tabular-nums; }
+.klabel{ font-family:var(--mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+.neg{ color:var(--accent); }
+/* double rules */
+.double-rule{ border-top:2px solid var(--ink); border-bottom:1px solid var(--border); height:6px; }
+.double-rule-inv{ border-top:1px solid var(--border); border-bottom:2px solid var(--ink); height:6px; }
+/* ============ masthead ============ */
+.masthead-band{ padding-top:24px; }
+.masthead{ display:flex; align-items:center; justify-content:space-between; height:72px; border-bottom:1px solid var(--border); gap:16px; flex-wrap:wrap; }
+.wordmark{ font-family:var(--serif); font-weight:600; font-size:20px; color:var(--ink); text-decoration:none; }
+.wordmark:hover{ color:var(--ink); }
+nav.top{ display:flex; align-items:center; gap:28px; flex-wrap:wrap; }
+nav.top a, .theme-toggle{
+  font-family:var(--mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--muted); text-decoration:none;
+}
+nav.top a:hover, nav.top a:focus-visible, .theme-toggle:hover{
+  color:var(--accent); text-decoration:underline; text-underline-offset:4px; text-decoration-thickness:1px;
+}
+.theme-toggle{ background:none; border:none; border-left:1px solid var(--border); cursor:pointer; padding:0 0 0 28px; }
+@media(max-width:720px){ .masthead{ height:auto; padding:14px 0; } nav.top{ gap:18px; } }
+/* ============ hero ============ */
+.hero{ padding-top:96px; }
+.kicker{ font-family:var(--mono); font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+.hero h1{
+  margin-top:24px; font-size:clamp(46px,6vw,84px); line-height:1.05; letter-spacing:-0.01em;
+  font-weight:var(--wght-display); max-width:10.5em;
+}
+@media(max-width:720px){ .hero h1{ font-size:clamp(38px,10vw,46px); } .h1br{ display:none; } }
+.hero .subhead{
+  margin-top:32px; font-size:20px; line-height:32px; color:var(--muted); max-width:46ch; font-weight:var(--wght-body);
+}
+.fact-strip{
+  margin-top:24px; font-family:var(--mono); font-size:12px; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--muted); line-height:22px;
+}
+.hero-links{ margin-top:40px; display:flex; gap:40px; }
+.hero-links a{ font-size:18px; font-weight:500; }
+.ex-block{ margin-top:64px; }
+.ex-caption{ font-family:var(--mono); font-size:12px; color:var(--muted); margin-top:12px; }
+svg.ex1{ display:block; width:100%; height:auto; }
+/* exhibit svg classes */
+.fan-line{ fill:none; stroke:var(--ink); stroke-width:1; opacity:var(--fan-op); }
+.fan-median{ fill:none; stroke:var(--accent); stroke-width:1.5; }
+.zero{ stroke:var(--border); stroke-width:1; stroke-dasharray:2 3; }
+.ax{ font-family:var(--mono); font-size:12px; fill:var(--muted); font-variant-numeric:tabular-nums; }
+svg .neg{ fill:var(--accent); }
+svg.ex1.ex-m, svg.ex2.ex-m{ display:none; }
+@media(max-width:720px){ svg.ex1.ex-d, svg.ex2.ex-d{ display:none; } svg.ex1.ex-m, svg.ex2.ex-m{ display:block; width:100%; height:auto; } .ex-m .ax{ font-size:14px; } .ex-m .plabel{ font-size:14px; } .ex-m .cdf-tag{ font-size:14px; } }
+.grid{ stroke:var(--border); stroke-width:1; opacity:.6; }
+.baseline{ stroke:var(--ink); stroke-width:1; opacity:.4; }
+.hist-fill{ fill:var(--accent); opacity:var(--chart-fill-opacity); stroke:none; }
+.hist-line{ fill:none; stroke:var(--accent); stroke-width:1.5; }
+.cdf{ fill:none; stroke:var(--accent-2); stroke-width:1.25; }
+.prule{ stroke:var(--ink); stroke-width:1; stroke-dasharray:3 2; }
+.zrule{ stroke:var(--border); stroke-width:1; }
+.plabel{ font-family:var(--mono); font-size:13px; fill:var(--ink); }
+.cdf-tag{ font-family:var(--mono); font-size:13px; fill:var(--accent-2); }
+/* ============ sections ============ */
+section{ padding:112px 0 96px; }
+@media(max-width:720px){ section{ padding:72px 0 64px; } }
+.sec-head{ display:flex; align-items:baseline; gap:16px; margin-bottom:48px; }
+.sec-head .no{ font-family:var(--mono); font-size:12px; color:var(--muted); white-space:nowrap; }
+.sec-head h2{ font-size:30px; line-height:38px; white-space:nowrap; }
+.sec-head .rule{ flex:1; border-top:1px solid var(--border); transform:translateY(-6px); }
+@media(max-width:720px){ .sec-head h2{ white-space:normal; font-size:26px; } }
+/* practice columns */
+.practice{ display:grid; grid-template-columns:1fr 1fr 1fr; }
+.practice > div{ padding-right:40px; }
+.practice > div + div{ border-left:1px solid var(--border); padding-left:40px; }
+.practice .idx{ font-family:var(--mono); font-size:12px; color:var(--muted); }
+.practice h3{ font-size:22px; line-height:30px; margin:20px 0 16px; }
+.practice p{ font-size:16px; line-height:26px; margin:0 0 16px; }
+.practice a{ font-size:16px; }
+@media(max-width:900px){
+  .practice{ grid-template-columns:1fr; }
+  .practice > div{ padding:32px 0; }
+  .practice > div + div{ border-left:none; border-top:1px solid var(--border); padding-left:0; }
+  .practice > div:first-child{ padding-top:0; }
+}
+/* ============ ledger ============ */
+.ledger-note{ text-align:right; font-family:var(--mono); font-size:12px; color:var(--muted); margin-bottom:12px; }
+table.ledger{ width:100%; border-collapse:separate; border-spacing:0; }
+table.ledger th{
+  font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--muted); font-weight:400; text-align:left; padding:0 0 10px;
+}
+table.ledger th{ border-bottom:2px solid var(--ink); }
+table.ledger tbody::before{ content:""; display:table-row; height:3px; }
+table.ledger td{ padding:16px 0; vertical-align:top; border-bottom:1px solid var(--border); }
+table.ledger tbody tr:hover{ background:var(--surface); }
+td.f{ width:120px; font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); padding-top:20px !important; }
+td.e .name{ font-weight:500; font-size:18px; line-height:26px; }
+td.e .detail{ font-size:15px; line-height:24px; color:var(--muted); margin-top:4px; }
+td.o{ width:110px; text-align:right; font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); padding-top:20px !important; }
+.ledger-foot{ font-family:var(--mono); font-size:12px; color:var(--muted); margin-top:16px; }
+@media(max-width:720px){
+  table.ledger, table.ledger tbody{ display:block; width:100%; }
+  table.ledger thead, table.ledger tbody::before{ display:none; }
+  table.ledger tr{ display:flex; flex-wrap:wrap; padding:16px 0; border-bottom:1px solid var(--border); }
+  table.ledger td{ display:block; border-bottom:none; padding:0; }
+  td.f{ width:auto; order:1; padding:0 !important; }
+  td.o{ width:auto; order:2; margin-left:auto; text-align:right; padding:0 !important; }
+  td.e{ width:100%; order:3; padding:8px 0 0 !important; }
+}
+/* ============ model band ============ */
+.model-band{ background:var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+.model-head{ font-family:var(--mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:48px; }
+.model-grid{ display:grid; grid-template-columns:340px 1fr; gap:48px; }
+@media(max-width:900px){ .model-grid{ grid-template-columns:1fr; } .model-grid .chart-col{ order:-1; } }
+.ctl{ margin-bottom:28px; }
+.ctl .lab{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; }
+.ctl .lab .n{ font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+.ctl .lab .v{ font-family:var(--mono); font-size:14px; color:var(--ink); }
+input[type=range]{ -webkit-appearance:none; appearance:none; width:100%; height:20px; background:transparent; cursor:pointer; margin:0; }
+input[type=range]::-webkit-slider-runnable-track{ height:2px; background:var(--border); }
+input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; width:12px; height:12px; background:var(--ink); margin-top:-5px; }
+input[type=range]::-moz-range-track{ height:2px; background:var(--border); }
+input[type=range]::-moz-range-thumb{ width:12px; height:12px; background:var(--ink); border:none; border-radius:0; }
+.run-btn{
+  font-family:var(--mono); font-size:13px; letter-spacing:.08em; text-transform:uppercase;
+  background:none; border:1px solid var(--ink); color:var(--ink); padding:12px 20px; cursor:pointer;
+  transition:background-color .12s, color .12s; margin-top:8px;
+}
+.run-btn:hover{ background:var(--ink); color:var(--bg); }
+svg.ex2{ display:block; width:100%; height:auto; }
+.results{ margin-top:20px; }
+.results .big{ font-family:var(--mono); font-weight:500; font-size:32px; line-height:40px; }
+.results .line{ font-family:var(--mono); font-size:13px; line-height:24px; color:var(--ink); margin-top:6px; }
+.results .close{ margin-top:14px; }
+.method{ font-size:16px; line-height:26px; color:var(--muted); margin-top:24px; max-width:640px; }
+.method .mono-note{ font-family:var(--mono); font-size:12px; color:var(--muted); }
+/* ============ elsewhere ============ */
+.else-grid{ display:grid; grid-template-columns:7fr 5fr; gap:48px; }
+@media(max-width:800px){ .else-grid{ grid-template-columns:1fr; } }
+.else-grid h3{ font-size:24px; margin-bottom:8px; }
+.else-grid .desc{ font-size:17px; line-height:27px; margin-bottom:6px; }
+.murl{ font-family:var(--mono); font-size:12px; color:var(--muted); }
+.blog-list{ margin-top:40px; }
+.blog-list .bh{ font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:16px; }
+.blog-list a{ font-style:italic; font-size:19px; }
+.blog-list .row{ margin-bottom:14px; }
+.blog-list .d{ font-family:var(--mono); font-size:11px; color:var(--muted); margin-left:12px; }
+.idx-list .row{ border-top:1px solid var(--border); padding:24px 0; }
+.idx-list .row:last-child{ border-bottom:1px solid var(--border); }
+.idx-list .nm{ font-weight:500; font-size:18px; }
+.idx-list .cl{ font-size:15px; color:var(--muted); margin:2px 0 4px; }
+/* ============ about ============ */
+.about-grid{ display:grid; grid-template-columns:6fr 1fr 5fr; }
+.about-grid .prose{ max-width:640px; }
+.facts{ background:var(--surface); border:1px solid var(--border); padding:24px; align-self:start; }
+.facts .t{ font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); padding-bottom:12px; border-bottom:1px solid var(--border); }
+.facts .row{ display:flex; gap:16px; padding:12px 0; border-bottom:1px solid var(--border); }
+.facts .row:last-child{ border-bottom:none; padding-bottom:0; }
+.facts .k{ font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); width:76px; flex-shrink:0; padding-top:3px; }
+.facts .v{ font-size:16px; line-height:24px; }
+@media(max-width:800px){ .about-grid{ grid-template-columns:1fr; } .about-grid .gap{ display:none; } .facts{ margin-top:48px; } }
+/* ============ contact ============ */
+.contact{ text-align:center; padding-top:128px; }
+.closing{ font-size:clamp(28px,3.5vw,40px); line-height:1.25; font-weight:500; max-width:20em; margin:0 auto; }
+.contact .rule-wrap{ max-width:1044px; margin:48px auto 32px; }
+.corr{ font-family:var(--mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+.email{ display:inline-block; margin-top:20px; font-size:34px; font-weight:400; }
+.phone{ font-family:var(--mono); font-size:15px; margin-top:16px; color:var(--ink); }
+.loc{ font-size:16px; color:var(--muted); margin-top:8px; }
+.colophon{ margin-top:64px; padding-bottom:48px; font-family:var(--mono); font-size:11px; line-height:20px; color:var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="wrap masthead-band">
+  <div class="double-rule"></div>
+  <header class="masthead">
+    <a class="wordmark" href="#top">SJP Consulting</a>
+    <nav class="top" id="topnav">
+      <a href="#practice">Practice</a>
+      <a href="#work">Work</a>
+      <a href="#model">Model</a>
+      <a href="#elsewhere">Elsewhere</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+</div>
+
+<div class="wrap hero" id="top">
+  <p class="kicker">Brisbane, Australia · Corporate finance · Analytics · Risk</p>
+  <h1>Financial models built <br class="h1br">to be examined.</h1>
+  <p class="subhead">Independent modelling and analysis for governments, infrastructure sponsors and banks. Thirty years of business cases, risk systems and investment-grade models.</p>
+  <p class="fact-strip">Expressways · Ports · Prisons · Ferries · Rail bids · Basel II · IFRS 9 · APRA ICAAP · Treasury FRR</p>
+  <div class="hero-links">
+    <a href="#work">Selected work</a>
+    <a href="#contact">Get in touch</a>
+  </div>
+  <div class="ex-block">
+    <svg viewBox="0 0 1140 200" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Fan chart of cumulative NPV percentile paths over 12 years" class="ex1 ex-d">
+<line x1="6" y1="168.8" x2="1076" y2="168.8" class="grid"/><line x1="6" y1="71.9" x2="1076" y2="71.9" class="zero"/><line x1="6" y1="39.6" x2="1076" y2="39.6" class="grid"/><path d="M6.0 175.3L95.2 178.9L184.3 171.7L273.5 164.3L362.7 156.0L451.8 148.5L541.0 141.1L630.2 132.4L719.3 125.4L808.5 118.8L897.7 112.7L986.8 106.9L1076.0 100.6" class="fan-line"/><path d="M6.0 175.3L95.2 175.7L184.3 168.0L273.5 159.0L362.7 150.4L451.8 142.3L541.0 133.8L630.2 125.8L719.3 119.3L808.5 112.5L897.7 105.7L986.8 99.0L1076.0 93.0" class="fan-line"/><path d="M6.0 175.3L95.2 174.2L184.3 166.0L273.5 156.3L362.7 147.5L451.8 138.9L541.0 130.5L630.2 122.6L719.3 114.8L808.5 107.9L897.7 101.4L986.8 94.8L1076.0 88.7" class="fan-line"/><path d="M6.0 175.3L95.2 172.9L184.3 164.2L273.5 154.5L362.7 145.5L451.8 136.3L541.0 128.3L630.2 120.1L719.3 112.3L808.5 105.2L897.7 98.4L986.8 91.7L1076.0 86.1" class="fan-line"/><path d="M6.0 175.3L95.2 171.9L184.3 163.0L273.5 153.0L362.7 143.7L451.8 134.7L541.0 126.2L630.2 117.9L719.3 110.3L808.5 103.1L897.7 96.0L986.8 89.5L1076.0 83.4" class="fan-line"/><path d="M6.0 175.3L95.2 171.2L184.3 161.8L273.5 151.9L362.7 142.1L451.8 133.1L541.0 124.5L630.2 116.1L719.3 108.5L808.5 100.9L897.7 94.0L986.8 87.6L1076.0 81.4" class="fan-line"/><path d="M6.0 175.3L95.2 170.5L184.3 160.9L273.5 150.6L362.7 140.9L451.8 131.8L541.0 123.0L630.2 114.7L719.3 107.0L808.5 99.4L897.7 92.5L986.8 85.7L1076.0 79.7" class="fan-line"/><path d="M6.0 175.3L95.2 169.8L184.3 160.0L273.5 149.7L362.7 139.9L451.8 130.7L541.0 121.7L630.2 113.3L719.3 105.6L808.5 98.0L897.7 91.1L986.8 84.2L1076.0 78.1" class="fan-line"/><path d="M6.0 175.3L95.2 169.2L184.3 159.1L273.5 148.9L362.7 138.8L451.8 129.5L541.0 120.5L630.2 111.9L719.3 104.2L808.5 96.7L897.7 89.7L986.8 82.8L1076.0 76.8" class="fan-line"/><path d="M6.0 175.3L95.2 168.7L184.3 158.3L273.5 147.9L362.7 137.8L451.8 128.5L541.0 119.5L630.2 110.8L719.3 103.0L808.5 95.5L897.7 88.4L986.8 81.6L1076.0 75.6" class="fan-line"/><path d="M6.0 175.3L95.2 168.3L184.3 157.6L273.5 147.2L362.7 137.0L451.8 127.5L541.0 118.4L630.2 109.7L719.3 101.8L808.5 94.3L897.7 87.3L986.8 80.5L1076.0 74.4" class="fan-line"/><path d="M6.0 175.3L95.2 167.8L184.3 156.9L273.5 146.4L362.7 136.2L451.8 126.6L541.0 117.5L630.2 108.7L719.3 100.8L808.5 93.3L897.7 86.2L986.8 79.4L1076.0 73.3" class="fan-line"/><path d="M6.0 175.3L95.2 167.4L184.3 156.2L273.5 145.6L362.7 135.4L451.8 125.7L541.0 116.6L630.2 107.8L719.3 99.6L808.5 92.2L897.7 85.2L986.8 78.3L1076.0 72.3" class="fan-line"/><path d="M6.0 175.3L95.2 166.9L184.3 155.7L273.5 145.0L362.7 134.7L451.8 124.8L541.0 115.8L630.2 107.0L719.3 98.7L808.5 91.3L897.7 84.1L986.8 77.3L1076.0 71.3" class="fan-line"/><path d="M6.0 175.3L95.2 166.5L184.3 155.2L273.5 144.2L362.7 134.0L451.8 124.0L541.0 114.9L630.2 106.2L719.3 97.7L808.5 90.2L897.7 83.0L986.8 76.2L1076.0 70.2" class="fan-line"/><path d="M6.0 175.3L95.2 166.1L184.3 154.6L273.5 143.6L362.7 133.3L451.8 123.3L541.0 114.2L630.2 105.3L719.3 96.9L808.5 89.4L897.7 82.1L986.8 75.4L1076.0 69.2" class="fan-line"/><path d="M6.0 175.3L95.2 165.7L184.3 154.1L273.5 143.0L362.7 132.7L451.8 122.5L541.0 113.4L630.2 104.6L719.3 96.2L808.5 88.5L897.7 81.3L986.8 74.5L1076.0 68.4" class="fan-line"/><path d="M6.0 175.3L95.2 165.3L184.3 153.6L273.5 142.5L362.7 132.0L451.8 121.8L541.0 112.6L630.2 103.8L719.3 95.4L808.5 87.5L897.7 80.5L986.8 73.7L1076.0 67.5" class="fan-line"/><path d="M6.0 175.3L95.2 165.0L184.3 153.1L273.5 141.9L362.7 131.4L451.8 121.2L541.0 111.9L630.2 103.0L719.3 94.6L808.5 86.8L897.7 79.6L986.8 72.8L1076.0 66.5" class="fan-line"/><path d="M6.0 175.3L95.2 164.7L184.3 152.6L273.5 141.3L362.7 130.7L451.8 120.5L541.0 111.1L630.2 102.2L719.3 93.9L808.5 86.1L897.7 78.7L986.8 72.1L1076.0 65.6" class="fan-line"/><path d="M6.0 175.3L95.2 164.3L184.3 152.2L273.5 140.8L362.7 130.0L451.8 119.9L541.0 110.4L630.2 101.4L719.3 93.2L808.5 85.2L897.7 77.9L986.8 71.2L1076.0 64.7" class="fan-line"/><path d="M6.0 175.3L95.2 164.0L184.3 151.8L273.5 140.2L362.7 129.5L451.8 119.3L541.0 109.6L630.2 100.7L719.3 92.4L808.5 84.6L897.7 77.2L986.8 70.4L1076.0 64.0" class="fan-line"/><path d="M6.0 175.3L95.2 163.6L184.3 151.4L273.5 139.7L362.7 128.9L451.8 118.6L541.0 109.0L630.2 99.9L719.3 91.7L808.5 83.8L897.7 76.4L986.8 69.6L1076.0 63.2" class="fan-line"/><path d="M6.0 175.3L95.2 163.3L184.3 151.0L273.5 139.2L362.7 128.3L451.8 118.1L541.0 108.3L630.2 99.2L719.3 90.9L808.5 83.0L897.7 75.6L986.8 68.8L1076.0 62.5" class="fan-line"/><path d="M6.0 175.3L95.2 162.9L184.3 150.6L273.5 138.7L362.7 127.7L451.8 117.5L541.0 107.6L630.2 98.5L719.3 90.3L808.5 82.3L897.7 74.9L986.8 68.1L1076.0 61.7" class="fan-line"/><path d="M6.0 175.3L95.2 162.6L184.3 150.1L273.5 138.2L362.7 127.2L451.8 116.9L541.0 106.9L630.2 97.8L719.3 89.4L808.5 81.6L897.7 74.1L986.8 67.3L1076.0 61.0" class="fan-line"/><path d="M6.0 175.3L95.2 162.3L184.3 149.6L273.5 137.6L362.7 126.6L451.8 116.2L541.0 106.3L630.2 97.0L719.3 88.7L808.5 80.8L897.7 73.4L986.8 66.5L1076.0 60.2" class="fan-line"/><path d="M6.0 175.3L95.2 162.0L184.3 149.1L273.5 137.1L362.7 126.0L451.8 115.6L541.0 105.6L630.2 96.4L719.3 88.1L808.5 80.2L897.7 72.7L986.8 65.7L1076.0 59.5" class="fan-line"/><path d="M6.0 175.3L95.2 161.7L184.3 148.7L273.5 136.5L362.7 125.4L451.8 114.9L541.0 105.0L630.2 95.9L719.3 87.3L808.5 79.4L897.7 72.0L986.8 65.1L1076.0 58.6" class="fan-line"/><path d="M6.0 175.3L95.2 161.4L184.3 148.2L273.5 136.0L362.7 124.9L451.8 114.3L541.0 104.3L630.2 95.2L719.3 86.6L808.5 78.6L897.7 71.2L986.8 64.4L1076.0 57.8" class="fan-line"/><path d="M6.0 175.3L95.2 161.1L184.3 147.8L273.5 135.6L362.7 124.3L451.8 113.7L541.0 103.7L630.2 94.4L719.3 85.9L808.5 77.9L897.7 70.5L986.8 63.6L1076.0 57.0" class="fan-line"/><path d="M6.0 175.3L95.2 160.8L184.3 147.4L273.5 135.1L362.7 123.7L451.8 113.0L541.0 103.1L630.2 93.7L719.3 85.2L808.5 77.2L897.7 69.7L986.8 62.9L1076.0 56.2" class="fan-line"/><path d="M6.0 175.3L95.2 160.5L184.3 147.0L273.5 134.6L362.7 123.2L451.8 112.4L541.0 102.4L630.2 93.0L719.3 84.5L808.5 76.4L897.7 69.0L986.8 62.0L1076.0 55.5" class="fan-line"/><path d="M6.0 175.3L95.2 160.2L184.3 146.6L273.5 134.1L362.7 122.5L451.8 111.7L541.0 101.7L630.2 92.4L719.3 83.8L808.5 75.5L897.7 68.3L986.8 61.3L1076.0 54.6" class="fan-line"/><path d="M6.0 175.3L95.2 159.9L184.3 146.2L273.5 133.7L362.7 122.0L451.8 111.1L541.0 101.0L630.2 91.7L719.3 83.0L808.5 74.9L897.7 67.4L986.8 60.5L1076.0 53.8" class="fan-line"/><path d="M6.0 175.3L95.2 159.6L184.3 145.8L273.5 133.1L362.7 121.4L451.8 110.5L541.0 100.4L630.2 91.0L719.3 82.3L808.5 74.2L897.7 66.7L986.8 59.7L1076.0 53.1" class="fan-line"/><path d="M6.0 175.3L95.2 159.3L184.3 145.4L273.5 132.6L362.7 120.9L451.8 109.8L541.0 99.8L630.2 90.4L719.3 81.5L808.5 73.4L897.7 65.9L986.8 58.9L1076.0 52.2" class="fan-line"/><path d="M6.0 175.3L95.2 158.9L184.3 145.0L273.5 132.1L362.7 120.3L451.8 109.2L541.0 99.1L630.2 89.7L719.3 80.9L808.5 72.6L897.7 65.2L986.8 58.2L1076.0 51.4" class="fan-line"/><path d="M6.0 175.3L95.2 158.6L184.3 144.6L273.5 131.5L362.7 119.6L451.8 108.6L541.0 98.5L630.2 89.1L719.3 80.1L808.5 72.0L897.7 64.4L986.8 57.4L1076.0 50.5" class="fan-line"/><path d="M6.0 175.3L95.2 158.3L184.3 144.1L273.5 131.0L362.7 119.0L451.8 107.8L541.0 97.8L630.2 88.3L719.3 79.4L808.5 71.2L897.7 63.6L986.8 56.6L1076.0 49.7" class="fan-line"/><path d="M6.0 175.3L95.2 158.0L184.3 143.6L273.5 130.5L362.7 118.5L451.8 107.2L541.0 97.2L630.2 87.7L719.3 78.7L808.5 70.3L897.7 62.7L986.8 55.8L1076.0 48.9" class="fan-line"/><path d="M6.0 175.3L95.2 157.7L184.3 143.1L273.5 129.9L362.7 117.9L451.8 106.5L541.0 96.4L630.2 86.9L719.3 78.1L808.5 69.5L897.7 61.8L986.8 54.9L1076.0 48.0" class="fan-line"/><path d="M6.0 175.3L95.2 157.3L184.3 142.6L273.5 129.3L362.7 117.2L451.8 105.9L541.0 95.5L630.2 86.1L719.3 77.2L808.5 68.7L897.7 60.9L986.8 54.0L1076.0 47.1" class="fan-line"/><path d="M6.0 175.3L95.2 156.9L184.3 142.1L273.5 128.7L362.7 116.6L451.8 105.2L541.0 94.7L630.2 85.5L719.3 76.4L808.5 67.9L897.7 60.0L986.8 53.1L1076.0 46.3" class="fan-line"/><path d="M6.0 175.3L95.2 156.5L184.3 141.6L273.5 128.1L362.7 115.9L451.8 104.6L541.0 94.0L630.2 84.7L719.3 75.6L808.5 67.0L897.7 59.1L986.8 52.1L1076.0 45.4" class="fan-line"/><path d="M6.0 175.3L95.2 156.2L184.3 141.1L273.5 127.5L362.7 115.3L451.8 103.8L541.0 93.2L630.2 83.8L719.3 74.6L808.5 66.1L897.7 58.2L986.8 51.1L1076.0 44.4" class="fan-line"/><path d="M6.0 175.3L95.2 155.8L184.3 140.6L273.5 126.9L362.7 114.6L451.8 103.1L541.0 92.3L630.2 82.9L719.3 73.5L808.5 65.3L897.7 57.3L986.8 50.0L1076.0 43.5" class="fan-line"/><path d="M6.0 175.3L95.2 155.4L184.3 140.0L273.5 126.3L362.7 113.7L451.8 102.2L541.0 91.5L630.2 81.9L719.3 72.6L808.5 64.2L897.7 56.4L986.8 49.2L1076.0 42.3" class="fan-line"/><path d="M6.0 175.3L95.2 155.0L184.3 139.4L273.5 125.5L362.7 112.8L451.8 101.4L541.0 90.7L630.2 81.0L719.3 71.6L808.5 63.1L897.7 55.2L986.8 48.1L1076.0 41.3" class="fan-line"/><path d="M6.0 175.3L95.2 154.5L184.3 138.7L273.5 124.7L362.7 112.0L451.8 100.4L541.0 89.8L630.2 79.9L719.3 70.5L808.5 62.0L897.7 54.0L986.8 46.9L1076.0 40.0" class="fan-line"/><path d="M6.0 175.3L95.2 154.1L184.3 137.9L273.5 123.9L362.7 111.1L451.8 99.5L541.0 88.8L630.2 78.8L719.3 69.3L808.5 60.7L897.7 52.9L986.8 45.6L1076.0 38.8" class="fan-line"/><path d="M6.0 175.3L95.2 153.6L184.3 137.1L273.5 123.2L362.7 110.2L451.8 98.4L541.0 87.8L630.2 77.5L719.3 68.2L808.5 59.3L897.7 51.6L986.8 44.2L1076.0 37.3" class="fan-line"/><path d="M6.0 175.3L95.2 152.9L184.3 136.3L273.5 122.2L362.7 109.1L451.8 97.2L541.0 86.4L630.2 76.2L719.3 66.8L808.5 58.1L897.7 50.0L986.8 42.9L1076.0 35.9" class="fan-line"/><path d="M6.0 175.3L95.2 152.3L184.3 135.5L273.5 121.1L362.7 108.0L451.8 96.0L541.0 85.0L630.2 74.8L719.3 65.2L808.5 56.5L897.7 48.6L986.8 41.4L1076.0 34.4" class="fan-line"/><path d="M6.0 175.3L95.2 151.6L184.3 134.6L273.5 119.9L362.7 106.7L451.8 94.6L541.0 83.6L630.2 73.3L719.3 63.6L808.5 54.7L897.7 46.8L986.8 39.5L1076.0 32.7" class="fan-line"/><path d="M6.0 175.3L95.2 150.8L184.3 133.6L273.5 118.6L362.7 105.4L451.8 93.1L541.0 82.1L630.2 71.5L719.3 61.9L808.5 52.9L897.7 44.9L986.8 37.6L1076.0 30.7" class="fan-line"/><path d="M6.0 175.3L95.2 149.7L184.3 132.3L273.5 117.0L362.7 103.8L451.8 91.1L541.0 80.2L630.2 69.6L719.3 59.9L808.5 51.0L897.7 42.8L986.8 35.2L1076.0 28.0" class="fan-line"/><path d="M6.0 175.3L95.2 148.5L184.3 130.6L273.5 115.0L362.7 101.5L451.8 88.7L541.0 77.5L630.2 67.0L719.3 57.1L808.5 48.2L897.7 39.9L986.8 32.0L1076.0 25.1" class="fan-line"/><path d="M6.0 175.3L95.2 146.8L184.3 128.4L273.5 112.3L362.7 98.1L451.8 85.0L541.0 74.0L630.2 63.1L719.3 53.7L808.5 43.8L897.7 35.7L986.8 28.0L1076.0 20.6" class="fan-line"/><path d="M6.0 175.3L95.2 143.6L184.3 124.1L273.5 107.3L362.7 92.5L451.8 78.9L541.0 67.1L630.2 56.4L719.3 45.7L808.5 36.2L897.7 27.4L986.8 19.5L1076.0 12.6" class="fan-line"/><path d="M6.0 175.3L95.2 161.3L184.3 148.0L273.5 135.8L362.7 124.6L451.8 114.0L541.0 104.0L630.2 94.8L719.3 86.3L808.5 78.3L897.7 70.9L986.8 64.0L1076.0 57.5" class="fan-median"/>
+<text x="6.0" y="196" class="ax">0</text><text x="362.7" y="196" class="ax">4</text><text x="719.3" y="196" class="ax">8</text><text x="1076.0" y="196" class="ax" text-anchor="end">12</text><text x="1084" y="172.3" class="ax neg" text-anchor="start">−$1.5m</text><text x="1084" y="75.4" class="ax" text-anchor="start">$0</text><text x="1084" y="43.1" class="ax" text-anchor="start">$500k</text></svg>
+    <svg viewBox="0 0 390 240" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Fan chart of cumulative NPV percentile paths over 12 years" class="ex1 ex-m">
+<line x1="6" y1="206.2" x2="338" y2="206.2" class="grid"/><line x1="6" y1="86.7" x2="338" y2="86.7" class="zero"/><line x1="6" y1="46.9" x2="338" y2="46.9" class="grid"/><path d="M6.0 214.2L33.7 218.6L61.3 209.7L89.0 200.7L116.7 190.4L144.3 181.2L172.0 172.0L199.7 161.3L227.3 152.7L255.0 144.6L282.7 137.1L310.3 129.9L338.0 122.1" class="fan-line"/><path d="M6.0 214.2L33.7 214.7L61.3 205.2L89.0 194.1L116.7 183.6L144.3 173.5L172.0 163.0L199.7 153.2L227.3 145.2L255.0 136.8L282.7 128.4L310.3 120.1L338.0 112.8" class="fan-line"/><path d="M6.0 214.2L33.7 212.8L61.3 202.7L89.0 190.8L116.7 179.9L144.3 169.3L172.0 159.0L199.7 149.2L227.3 139.7L255.0 131.1L282.7 123.1L310.3 114.9L338.0 107.5" class="fan-line"/><path d="M6.0 214.2L33.7 211.3L61.3 200.6L89.0 188.6L116.7 177.4L144.3 166.2L172.0 156.2L199.7 146.1L227.3 136.5L255.0 127.9L282.7 119.4L310.3 111.2L338.0 104.3" class="fan-line"/><path d="M6.0 214.2L33.7 210.0L61.3 199.0L89.0 186.7L116.7 175.3L144.3 164.1L172.0 153.7L199.7 143.5L227.3 134.1L255.0 125.3L282.7 116.4L310.3 108.5L338.0 101.0" class="fan-line"/><path d="M6.0 214.2L33.7 209.1L61.3 197.6L89.0 185.3L116.7 173.3L144.3 162.2L172.0 151.7L199.7 141.2L227.3 131.9L255.0 122.6L282.7 114.1L310.3 106.1L338.0 98.4" class="fan-line"/><path d="M6.0 214.2L33.7 208.2L61.3 196.4L89.0 183.8L116.7 171.9L144.3 160.6L172.0 149.8L199.7 139.5L227.3 130.0L255.0 120.7L282.7 112.1L310.3 103.8L338.0 96.3" class="fan-line"/><path d="M6.0 214.2L33.7 207.4L61.3 195.3L89.0 182.6L116.7 170.6L144.3 159.2L172.0 148.2L199.7 137.7L227.3 128.3L255.0 118.9L282.7 110.4L310.3 101.9L338.0 94.4" class="fan-line"/><path d="M6.0 214.2L33.7 206.7L61.3 194.2L89.0 181.6L116.7 169.3L144.3 157.7L172.0 146.7L199.7 136.1L227.3 126.6L255.0 117.4L282.7 108.6L310.3 100.2L338.0 92.8" class="fan-line"/><path d="M6.0 214.2L33.7 206.1L61.3 193.3L89.0 180.4L116.7 167.9L144.3 156.5L172.0 145.4L199.7 134.7L227.3 125.0L255.0 115.9L282.7 107.1L310.3 98.7L338.0 91.3" class="fan-line"/><path d="M6.0 214.2L33.7 205.5L61.3 192.4L89.0 179.5L116.7 167.0L144.3 155.3L172.0 144.1L199.7 133.4L227.3 123.6L255.0 114.4L282.7 105.7L310.3 97.4L338.0 89.9" class="fan-line"/><path d="M6.0 214.2L33.7 205.0L61.3 191.5L89.0 178.6L116.7 166.0L144.3 154.2L172.0 142.9L199.7 132.2L227.3 122.3L255.0 113.1L282.7 104.4L310.3 96.0L338.0 88.5" class="fan-line"/><path d="M6.0 214.2L33.7 204.5L61.3 190.7L89.0 177.7L116.7 165.1L144.3 153.1L172.0 141.9L199.7 131.1L227.3 120.9L255.0 111.8L282.7 103.2L310.3 94.7L338.0 87.2" class="fan-line"/><path d="M6.0 214.2L33.7 203.8L61.3 190.0L89.0 176.9L116.7 164.1L144.3 152.0L172.0 140.8L199.7 130.0L227.3 119.8L255.0 110.7L282.7 101.8L310.3 93.4L338.0 86.0" class="fan-line"/><path d="M6.0 214.2L33.7 203.3L61.3 189.4L89.0 175.9L116.7 163.3L144.3 151.0L172.0 139.8L199.7 129.0L227.3 118.6L255.0 109.4L282.7 100.5L310.3 92.1L338.0 84.7" class="fan-line"/><path d="M6.0 214.2L33.7 202.8L61.3 188.7L89.0 175.1L116.7 162.5L144.3 150.1L172.0 138.9L199.7 128.0L227.3 117.6L255.0 108.3L282.7 99.4L310.3 91.1L338.0 83.4" class="fan-line"/><path d="M6.0 214.2L33.7 202.3L61.3 188.0L89.0 174.4L116.7 161.7L144.3 149.2L172.0 137.9L199.7 127.0L227.3 116.7L255.0 107.2L282.7 98.3L310.3 90.0L338.0 82.4" class="fan-line"/><path d="M6.0 214.2L33.7 201.9L61.3 187.4L89.0 173.8L116.7 160.8L144.3 148.3L172.0 136.9L199.7 126.0L227.3 115.7L255.0 106.0L282.7 97.4L310.3 89.0L338.0 81.3" class="fan-line"/><path d="M6.0 214.2L33.7 201.5L61.3 186.9L89.0 173.1L116.7 160.1L144.3 147.5L172.0 136.1L199.7 125.0L227.3 114.8L255.0 105.2L282.7 96.3L310.3 87.9L338.0 80.1" class="fan-line"/><path d="M6.0 214.2L33.7 201.1L61.3 186.2L89.0 172.3L116.7 159.2L144.3 146.7L172.0 135.1L199.7 124.1L227.3 113.9L255.0 104.2L282.7 95.2L310.3 87.0L338.0 79.0" class="fan-line"/><path d="M6.0 214.2L33.7 200.7L61.3 185.7L89.0 171.7L116.7 158.4L144.3 145.9L172.0 134.2L199.7 123.2L227.3 113.0L255.0 103.2L282.7 94.1L310.3 85.9L338.0 77.9" class="fan-line"/><path d="M6.0 214.2L33.7 200.2L61.3 185.2L89.0 171.0L116.7 157.7L144.3 145.2L172.0 133.3L199.7 122.3L227.3 112.1L255.0 102.4L282.7 93.3L310.3 84.9L338.0 77.0" class="fan-line"/><path d="M6.0 214.2L33.7 199.8L61.3 184.7L89.0 170.3L116.7 157.0L144.3 144.4L172.0 132.4L199.7 121.2L227.3 111.1L255.0 101.4L282.7 92.3L310.3 83.9L338.0 76.0" class="fan-line"/><path d="M6.0 214.2L33.7 199.4L61.3 184.2L89.0 169.7L116.7 156.3L144.3 143.7L172.0 131.6L199.7 120.4L227.3 110.2L255.0 100.5L282.7 91.4L310.3 82.9L338.0 75.1" class="fan-line"/><path d="M6.0 214.2L33.7 198.9L61.3 183.7L89.0 169.1L116.7 155.5L144.3 143.0L172.0 130.8L199.7 119.6L227.3 109.4L255.0 99.6L282.7 90.4L310.3 82.0L338.0 74.2" class="fan-line"/><path d="M6.0 214.2L33.7 198.6L61.3 183.2L89.0 168.5L116.7 154.9L144.3 142.2L172.0 130.0L199.7 118.7L227.3 108.4L255.0 98.7L282.7 89.5L310.3 81.1L338.0 73.3" class="fan-line"/><path d="M6.0 214.2L33.7 198.2L61.3 182.6L89.0 167.7L116.7 154.1L144.3 141.4L172.0 129.2L199.7 117.8L227.3 107.4L255.0 97.8L282.7 88.6L310.3 80.1L338.0 72.4" class="fan-line"/><path d="M6.0 214.2L33.7 197.8L61.3 182.0L89.0 167.1L116.7 153.4L144.3 140.6L172.0 128.4L199.7 117.0L227.3 106.7L255.0 96.9L282.7 87.8L310.3 79.1L338.0 71.5" class="fan-line"/><path d="M6.0 214.2L33.7 197.5L61.3 181.4L89.0 166.4L116.7 152.8L144.3 139.8L172.0 127.6L199.7 116.3L227.3 105.7L255.0 96.1L282.7 86.8L310.3 78.4L338.0 70.4" class="fan-line"/><path d="M6.0 214.2L33.7 197.1L61.3 180.8L89.0 165.8L116.7 152.1L144.3 139.0L172.0 126.7L199.7 115.5L227.3 104.9L255.0 95.0L282.7 85.9L310.3 77.5L338.0 69.4" class="fan-line"/><path d="M6.0 214.2L33.7 196.7L61.3 180.4L89.0 165.2L116.7 151.3L144.3 138.3L172.0 126.0L199.7 114.5L227.3 104.0L255.0 94.1L282.7 85.0L310.3 76.5L338.0 68.4" class="fan-line"/><path d="M6.0 214.2L33.7 196.3L61.3 179.9L89.0 164.6L116.7 150.6L144.3 137.4L172.0 125.2L199.7 113.6L227.3 103.1L255.0 93.2L282.7 84.1L310.3 75.6L338.0 67.4" class="fan-line"/><path d="M6.0 214.2L33.7 196.0L61.3 179.4L89.0 164.1L116.7 149.9L144.3 136.7L172.0 124.3L199.7 112.8L227.3 102.3L255.0 92.3L282.7 83.2L310.3 74.6L338.0 66.5" class="fan-line"/><path d="M6.0 214.2L33.7 195.6L61.3 178.9L89.0 163.4L116.7 149.2L144.3 135.9L172.0 123.5L199.7 112.0L227.3 101.4L255.0 91.2L282.7 82.3L310.3 73.7L338.0 65.5" class="fan-line"/><path d="M6.0 214.2L33.7 195.2L61.3 178.4L89.0 162.9L116.7 148.5L144.3 135.1L172.0 122.7L199.7 111.2L227.3 100.4L255.0 90.5L282.7 81.2L310.3 72.7L338.0 64.5" class="fan-line"/><path d="M6.0 214.2L33.7 194.9L61.3 177.9L89.0 162.2L116.7 147.8L144.3 134.3L172.0 121.9L199.7 110.4L227.3 99.6L255.0 89.6L282.7 80.3L310.3 71.7L338.0 63.6" class="fan-line"/><path d="M6.0 214.2L33.7 194.4L61.3 177.4L89.0 161.6L116.7 147.1L144.3 133.5L172.0 121.2L199.7 109.6L227.3 98.6L255.0 88.6L282.7 79.4L310.3 70.8L338.0 62.5" class="fan-line"/><path d="M6.0 214.2L33.7 194.0L61.3 176.8L89.0 160.9L116.7 146.4L144.3 132.7L172.0 120.3L199.7 108.7L227.3 97.8L255.0 87.7L282.7 78.5L310.3 69.8L338.0 61.5" class="fan-line"/><path d="M6.0 214.2L33.7 193.6L61.3 176.4L89.0 160.2L116.7 145.5L144.3 131.9L172.0 119.5L199.7 107.9L227.3 96.9L255.0 86.9L282.7 77.5L310.3 68.9L338.0 60.4" class="fan-line"/><path d="M6.0 214.2L33.7 193.3L61.3 175.8L89.0 159.5L116.7 144.9L144.3 131.1L172.0 118.7L199.7 107.0L227.3 96.0L255.0 85.9L282.7 76.5L310.3 67.9L338.0 59.4" class="fan-line"/><path d="M6.0 214.2L33.7 192.9L61.3 175.2L89.0 158.9L116.7 144.3L144.3 130.2L172.0 117.9L199.7 106.2L227.3 95.2L255.0 84.8L282.7 75.4L310.3 66.9L338.0 58.4" class="fan-line"/><path d="M6.0 214.2L33.7 192.5L61.3 174.5L89.0 158.2L116.7 143.5L144.3 129.4L172.0 116.9L199.7 105.3L227.3 94.4L255.0 83.8L282.7 74.3L310.3 65.8L338.0 57.4" class="fan-line"/><path d="M6.0 214.2L33.7 192.0L61.3 173.9L89.0 157.5L116.7 142.6L144.3 128.6L172.0 115.9L199.7 104.3L227.3 93.3L255.0 82.8L282.7 73.2L310.3 64.8L338.0 56.2" class="fan-line"/><path d="M6.0 214.2L33.7 191.6L61.3 173.2L89.0 156.7L116.7 141.9L144.3 127.8L172.0 114.9L199.7 103.5L227.3 92.3L255.0 81.8L282.7 72.1L310.3 63.6L338.0 55.2" class="fan-line"/><path d="M6.0 214.2L33.7 191.1L61.3 172.7L89.0 156.1L116.7 141.0L144.3 127.0L172.0 114.0L199.7 102.5L227.3 91.3L255.0 80.7L282.7 71.0L310.3 62.3L338.0 54.1" class="fan-line"/><path d="M6.0 214.2L33.7 190.7L61.3 172.1L89.0 155.3L116.7 140.2L144.3 126.1L172.0 113.1L199.7 101.5L227.3 90.1L255.0 79.6L282.7 69.9L310.3 61.1L338.0 52.9" class="fan-line"/><path d="M6.0 214.2L33.7 190.2L61.3 171.4L89.0 154.5L116.7 139.3L144.3 125.2L172.0 112.0L199.7 100.3L227.3 88.7L255.0 78.6L282.7 68.7L310.3 59.8L338.0 51.7" class="fan-line"/><path d="M6.0 214.2L33.7 189.7L61.3 170.7L89.0 153.8L116.7 138.3L144.3 124.1L172.0 111.0L199.7 99.1L227.3 87.7L255.0 77.2L282.7 67.6L310.3 58.7L338.0 50.3" class="fan-line"/><path d="M6.0 214.2L33.7 189.1L61.3 169.9L89.0 152.8L116.7 137.2L144.3 123.1L172.0 109.9L199.7 98.0L227.3 86.4L255.0 75.9L282.7 66.1L310.3 57.4L338.0 49.0" class="fan-line"/><path d="M6.0 214.2L33.7 188.6L61.3 169.1L89.0 151.8L116.7 136.2L144.3 121.9L172.0 108.9L199.7 96.6L227.3 85.1L255.0 74.5L282.7 64.7L310.3 56.0L338.0 47.4" class="fan-line"/><path d="M6.0 214.2L33.7 188.0L61.3 168.1L89.0 150.9L116.7 135.1L144.3 120.7L172.0 107.5L199.7 95.2L227.3 83.6L255.0 72.9L282.7 63.3L310.3 54.3L338.0 45.9" class="fan-line"/><path d="M6.0 214.2L33.7 187.4L61.3 167.2L89.0 150.0L116.7 134.0L144.3 119.4L172.0 106.3L199.7 93.6L227.3 82.2L255.0 71.2L282.7 61.7L310.3 52.7L338.0 44.1" class="fan-line"/><path d="M6.0 214.2L33.7 186.6L61.3 166.2L89.0 148.8L116.7 132.7L144.3 117.9L172.0 104.7L199.7 92.1L227.3 80.5L255.0 69.7L282.7 59.8L310.3 51.0L338.0 42.4" class="fan-line"/><path d="M6.0 214.2L33.7 185.8L61.3 165.2L89.0 147.4L116.7 131.2L144.3 116.5L172.0 102.9L199.7 90.4L227.3 78.5L255.0 67.8L282.7 58.1L310.3 49.1L338.0 40.6" class="fan-line"/><path d="M6.0 214.2L33.7 185.0L61.3 164.1L89.0 145.9L116.7 129.7L144.3 114.7L172.0 101.2L199.7 88.4L227.3 76.5L255.0 65.6L282.7 55.8L310.3 46.9L338.0 38.4" class="fan-line"/><path d="M6.0 214.2L33.7 184.0L61.3 162.8L89.0 144.3L116.7 128.1L144.3 112.9L172.0 99.3L199.7 86.2L227.3 74.4L255.0 63.4L282.7 53.5L310.3 44.5L338.0 36.0" class="fan-line"/><path d="M6.0 214.2L33.7 182.7L61.3 161.2L89.0 142.4L116.7 126.1L144.3 110.4L172.0 97.0L199.7 83.9L227.3 71.9L255.0 61.0L282.7 50.9L310.3 41.5L338.0 32.7" class="fan-line"/><path d="M6.0 214.2L33.7 181.2L61.3 159.1L89.0 139.9L116.7 123.3L144.3 107.4L172.0 93.7L199.7 80.7L227.3 68.5L255.0 57.5L282.7 47.4L310.3 37.6L338.0 29.0" class="fan-line"/><path d="M6.0 214.2L33.7 179.0L61.3 156.4L89.0 136.6L116.7 119.0L144.3 103.0L172.0 89.3L199.7 75.9L227.3 64.3L255.0 52.1L282.7 42.1L310.3 32.6L338.0 23.5" class="fan-line"/><path d="M6.0 214.2L33.7 175.1L61.3 151.0L89.0 130.4L116.7 112.1L144.3 95.4L172.0 80.8L199.7 67.6L227.3 54.5L255.0 42.8L282.7 31.9L310.3 22.2L338.0 13.6" class="fan-line"/><path d="M6.0 214.2L33.7 196.9L61.3 180.6L89.0 165.5L116.7 151.7L144.3 138.7L172.0 126.3L199.7 115.0L227.3 104.4L255.0 94.6L282.7 85.5L310.3 77.0L338.0 69.0" class="fan-median"/>
+<text x="6.0" y="236" class="ax">0</text><text x="116.7" y="236" class="ax">4</text><text x="227.3" y="236" class="ax">8</text><text x="338.0" y="236" class="ax" text-anchor="end">12</text><text x="346" y="209.7" class="ax neg" text-anchor="start">−$1.5m</text><text x="346" y="90.2" class="ax" text-anchor="start">$0</text><text x="346" y="50.4" class="ax" text-anchor="start">$500k</text></svg>
+    <p class="ex-caption">Exhibit 1 — Cumulative NPV percentile paths over 12 years, 10,000 trials, default assumptions. The live model is Exhibit 2, below.</p>
+  </div>
+
+  </div>
+
+<section id="practice">
+  <div class="wrap">
+    <div class="sec-head"><span class="no">No. 01</span><h2>Practice</h2><span class="rule"></span></div>
+    <div class="practice">
+      <div>
+        <span class="idx">01</span>
+        <h3>Corporate finance and business cases</h3>
+        <p>Business cases, delivery-options analyses, tolling and patronage models, bid models, hurdle-rate reviews. Investment-grade DCF models with assumption books, documented so a board, lender or Treasury reviewer can open a cell and see how a number was built. Mergers, acquisitions and restructures.</p>
+        <a href="#work">See the work</a>
+      </div>
+      <div>
+        <span class="idx">02</span>
+        <h3>Advanced analytics and machine learning</h3>
+        <p>Data and risk analytics in R and Python: classification, regression, time series, Monte Carlo simulation. Delivered through Quarto, Shiny and Power BI over SQL. The modelling is now heavily AI-assisted, under a gated process: specify and verify before any code is written, test before anything ships.</p>
+        <a href="#work">See the work</a>
+      </div>
+      <div>
+        <span class="idx">03</span>
+        <h3>Risk and project finance</h3>
+        <p>PPP and project finance models. Simulation-based risk analysis, QRA and SRA cost-risk analytics. Financial-institution risk: regulatory capital and credit systems under the Basel framework, IFRS 9 provisioning, ICAAP stress testing, liquidity and capital.</p>
+        <a href="#work">See the work</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="work">
+  <div class="wrap">
+    <div class="sec-head"><span class="no">No. 02</span><h2>Selected work</h2><span class="rule"></span></div>
+    <p class="ledger-note">Selected engagements, 1990s to now.†</p>
+    <!-- PERIOD COLUMN: REPLACE_WITH_VERIFIED_DATES -->
+    <table class="ledger">
+      <thead>
+        <tr><th scope="col">Field</th><th scope="col">Engagement</th><th scope="col" style="text-align:right">Output</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="f">Infrastructure</td><td class="e"><div class="name">Brisbane expressway, bridge and water projects</div><div class="detail">Financial models for delivery and funding decisions.</div></td><td class="o">Model</td></tr>
+        <tr><td class="f">Banking</td><td class="e"><div class="name">IFRS 9 provisioning system</div><div class="detail">Built as an Azure and R web application for an overseas credit agency.</div></td><td class="o">System</td></tr>
+        <tr><td class="f">Transport</td><td class="e"><div class="name">Ferry operations, Brisbane and Dubai Creek</div><div class="detail">Operating and financial analysis for council and overseas operators.</div></td><td class="o">Analysis</td></tr>
+        <tr><td class="f">Government</td><td class="e"><div class="name">Queensland Treasury FRR financial statements model</div><div class="detail">Excel, VBA and Power Query, under the Financial Reporting Requirements.</div></td><td class="o">Model</td></tr>
+        <tr><td class="f">Banking</td><td class="e"><div class="name">APRA CPS 226 swaps margining</div><div class="detail">Initial-margin compliance for non-centrally cleared derivatives.</div></td><td class="o">System</td></tr>
+        <tr><td class="f">Infrastructure</td><td class="e"><div class="name">Correctional facility evaluation</div><div class="detail">Delivery options and financial evaluation.</div></td><td class="o">Evaluation</td></tr>
+        <tr><td class="f">Corporate</td><td class="e"><div class="name">Finance Director, medical-device startup</div><div class="detail">Forecasts for Information Memoranda; finance function built out, Xero to NetSuite.</div></td><td class="o">FD role</td></tr>
+        <tr><td class="f">Transport</td><td class="e"><div class="name">Rail bid models and sourcing strategies</div><div class="detail">Procurement-side models and sourcing evaluation.</div></td><td class="o">Model</td></tr>
+        <tr><td class="f">Banking</td><td class="e"><div class="name">Basel II credit risk system</div><div class="detail">APRA-compliant PD, LGD and expected-loss framework.</div></td><td class="o">System</td></tr>
+        <tr><td class="f">Energy</td><td class="e"><div class="name">Sugar mill cogeneration PPP</div></td><td class="o">Model</td></tr>
+        <tr><td class="f">Infrastructure</td><td class="e"><div class="name">Port of Townsville commercial facilities options</div></td><td class="o">Analysis</td></tr>
+        <tr><td class="f">Banking</td><td class="e"><div class="name">APRA ICAAP stress testing</div><div class="detail">Capital stress testing for an Australian mutual.</div></td><td class="o">Analysis</td></tr>
+      </tbody>
+    </table>
+    <p class="ledger-foot">† n = 12 of a longer record. Some clients prefer their models stay private. References on request.</p>
+  </div>
+</section>
+
+<section id="model" class="model-band">
+  <div class="wrap">
+    <div class="sec-head"><span class="no">No. 03</span><h2>The model</h2><span class="rule"></span></div>
+    <p class="model-head">Live model — Monte Carlo NPV · 10,000 trials · Client-side, no data leaves the page</p>
+    <div class="model-grid">
+      <div class="form-col">
+        <div class="ctl">
+          <div class="lab"><span class="n">Capex</span><span class="v" id="v-capex">$1.60m</span></div>
+          <input type="range" id="in-capex" min="800000" max="3000000" step="50000" value="1600000" aria-label="Capital expenditure">
+        </div>
+        <div class="ctl">
+          <div class="lab"><span class="n">Revenue growth</span><span class="v" id="v-growth">2.50%</span></div>
+          <input type="range" id="in-growth" min="0" max="6" step="0.25" value="2.5" aria-label="Revenue growth per annum">
+        </div>
+        <div class="ctl">
+          <div class="lab"><span class="n">Discount rate</span><span class="v" id="v-rate">10.00%</span></div>
+          <input type="range" id="in-rate" min="6" max="14" step="0.25" value="10" aria-label="Discount rate">
+        </div>
+        <div class="ctl">
+          <div class="lab"><span class="n">Volatility</span><span class="v" id="v-vol">28.00%</span></div>
+          <input type="range" id="in-vol" min="10" max="45" step="1" value="28" aria-label="Revenue volatility">
+        </div>
+        <button class="run-btn" id="run" hidden>Run 10,000 trials</button>
+        <noscript><p class="mono-note klabel" style="margin-top:16px">Static run shown. The interactive version requires JavaScript.</p></noscript>
+      </div>
+      <div class="chart-col">
+        <div id="ex2-slot"><svg viewBox="0 0 720 400" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Histogram of simulated NPV outcomes with cumulative distribution overlay" class="ex2 ex-d">
+<line x1="8" y1="105.0" x2="658" y2="105.0" class="grid"/><line x1="8" y1="192.0" x2="658" y2="192.0" class="grid"/><line x1="8" y1="279.0" x2="658" y2="279.0" class="grid"/><line x1="8" y1="366" x2="658" y2="366" class="baseline"/>
+<path d="M8.0 366L8.0 358.9L24.3 358.9L24.3 351.9L40.5 351.9L40.5 353.0L56.8 353.0L56.8 344.2L73.0 344.2L73.0 334.8L89.2 334.8L89.2 326.5L105.5 326.5L105.5 318.3L121.7 318.3L121.7 294.2L138.0 294.2L138.0 265.9L154.2 265.9L154.2 263.0L170.5 263.0L170.5 228.2L186.7 228.2L186.7 195.2L203.0 195.2L203.0 157.0L219.2 157.0L219.2 128.7L235.5 128.7L235.5 105.7L251.7 105.7L251.7 83.9L268.0 83.9L268.0 71.6L284.3 71.6L284.3 20.4L300.5 20.4L300.5 18.0L316.8 18.0L316.8 45.7L333.0 45.7L333.0 39.8L349.2 39.8L349.2 48.6L365.5 48.6L365.5 48.6L381.7 48.6L381.7 65.1L398.0 65.1L398.0 102.8L414.3 102.8L414.3 134.6L430.5 134.6L430.5 169.9L446.7 169.9L446.7 178.8L463.0 178.8L463.0 215.3L479.3 215.3L479.3 241.2L495.5 241.2L495.5 275.9L511.8 275.9L511.8 283.6L528.0 283.6L528.0 306.5L544.2 306.5L544.2 317.7L560.5 317.7L560.5 327.1L576.8 327.1L576.8 341.3L593.0 341.3L593.0 348.3L609.3 348.3L609.3 351.9L625.5 351.9L625.5 354.8L641.7 354.8L641.7 358.3L658.0 358.3L658.0 366Z" class="hist-fill"/><path d="M8.0 366L8.0 358.9L24.3 358.9L24.3 351.9L40.5 351.9L40.5 353.0L56.8 353.0L56.8 344.2L73.0 344.2L73.0 334.8L89.2 334.8L89.2 326.5L105.5 326.5L105.5 318.3L121.7 318.3L121.7 294.2L138.0 294.2L138.0 265.9L154.2 265.9L154.2 263.0L170.5 263.0L170.5 228.2L186.7 228.2L186.7 195.2L203.0 195.2L203.0 157.0L219.2 157.0L219.2 128.7L235.5 128.7L235.5 105.7L251.7 105.7L251.7 83.9L268.0 83.9L268.0 71.6L284.3 71.6L284.3 20.4L300.5 20.4L300.5 18.0L316.8 18.0L316.8 45.7L333.0 45.7L333.0 39.8L349.2 39.8L349.2 48.6L365.5 48.6L365.5 48.6L381.7 48.6L381.7 65.1L398.0 65.1L398.0 102.8L414.3 102.8L414.3 134.6L430.5 134.6L430.5 169.9L446.7 169.9L446.7 178.8L463.0 178.8L463.0 215.3L479.3 215.3L479.3 241.2L495.5 241.2L495.5 275.9L511.8 275.9L511.8 283.6L528.0 283.6L528.0 306.5L544.2 306.5L544.2 317.7L560.5 317.7L560.5 327.1L576.8 327.1L576.8 341.3L593.0 341.3L593.0 348.3L609.3 348.3L609.3 351.9L625.5 351.9L625.5 354.8L641.7 354.8L641.7 358.3L658.0 358.3L658.0 366" class="hist-line"/>
+<path d="M8.0 365.3L13.4 365.2L18.8 365.0L24.3 364.9L29.7 364.5L35.1 364.3L40.5 364.1L45.9 363.8L51.3 363.6L56.8 363.3L62.2 363.1L67.6 362.6L73.0 362.0L78.4 361.4L83.8 360.7L89.2 360.2L94.7 359.3L100.1 358.3L105.5 357.8L110.9 357.0L116.3 356.1L121.7 355.0L127.2 353.5L132.6 352.2L138.0 350.8L143.4 348.7L148.8 346.5L154.3 344.8L159.7 343.0L165.1 340.8L170.5 338.8L175.9 336.4L181.3 333.5L186.8 330.6L192.2 327.7L197.6 324.2L203.0 320.5L208.4 316.6L213.8 312.7L219.3 308.2L224.7 303.6L230.1 298.7L235.5 294.1L240.9 288.8L246.3 283.8L251.8 278.8L257.2 274.0L262.6 267.3L268.0 262.1L273.4 256.9L278.8 251.0L284.3 244.7L289.7 238.3L295.1 231.2L300.5 224.3L305.9 217.1L311.3 210.4L316.8 203.7L322.2 197.9L327.6 190.7L333.0 184.8L338.4 177.9L343.8 171.9L349.3 165.5L354.7 158.6L360.1 152.9L365.5 146.7L370.9 140.7L376.3 134.3L381.7 128.0L387.2 122.2L392.6 117.0L398.0 110.2L403.4 104.8L408.8 99.4L414.3 94.6L419.7 90.3L425.1 85.4L430.5 81.0L435.9 77.2L441.3 72.8L446.8 69.4L452.2 65.6L457.6 62.0L463.0 58.3L468.4 55.2L473.8 52.4L479.3 49.4L484.7 46.3L490.1 44.3L495.5 42.0L500.9 40.3L506.3 38.5L511.8 36.7L517.2 34.8L522.6 33.1L528.0 31.8L533.4 30.5L538.8 29.4L544.2 28.3L549.7 27.2L555.1 26.2L560.5 25.4L565.9 24.5L571.3 23.6L576.8 23.2L582.2 22.4L587.6 22.0L593.0 21.7L598.4 21.1L603.8 20.9L609.3 20.6L614.7 20.2L620.1 20.0L625.5 19.8L630.9 19.7L636.3 19.5L641.8 19.1L647.2 19.0L652.6 18.8L658.0 18.7" class="cdf"/>
+<line x1="238.5" y1="16" x2="238.5" y2="366" class="zrule"/><line x1="186.0" y1="16" x2="186.0" y2="366" class="prule"/><text x="190.0" y="28" class="plabel">P10</text><line x1="326.5" y1="16" x2="326.5" y2="366" class="prule"/><text x="330.5" y="28" class="plabel">P50</text><line x1="472.8" y1="16" x2="472.8" y2="366" class="prule"/><text x="476.8" y="28" class="plabel">P90</text><text x="8.0" y="388" class="ax neg" text-anchor="start">−$583k</text><text x="238.5" y="388" class="ax" text-anchor="middle">$0</text><text x="658.0" y="388" class="ax" text-anchor="end">$1.06m</text><text x="666" y="369.5" class="ax">0%</text><text x="666" y="195.5" class="ax">50%</text><text x="666" y="21.5" class="ax">100%</text>
+<text x="666" y="40" class="cdf-tag">CDF</text></svg><svg viewBox="0 0 390 330" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Histogram of simulated NPV outcomes with cumulative distribution overlay" class="ex2 ex-m">
+<line x1="8" y1="87.5" x2="353" y2="87.5" class="grid"/><line x1="8" y1="157.0" x2="353" y2="157.0" class="grid"/><line x1="8" y1="226.5" x2="353" y2="226.5" class="grid"/><line x1="8" y1="296" x2="353" y2="296" class="baseline"/>
+<path d="M8.0 296L8.0 290.4L16.6 290.4L16.6 284.7L25.2 284.7L25.2 285.7L33.9 285.7L33.9 278.6L42.5 278.6L42.5 271.1L51.1 271.1L51.1 264.5L59.8 264.5L59.8 257.9L68.4 257.9L68.4 238.6L77.0 238.6L77.0 216.0L85.6 216.0L85.6 213.7L94.2 213.7L94.2 185.9L102.9 185.9L102.9 159.6L111.5 159.6L111.5 129.0L120.1 129.0L120.1 106.4L128.8 106.4L128.8 88.1L137.4 88.1L137.4 70.7L146.0 70.7L146.0 60.8L154.6 60.8L154.6 19.9L163.2 19.9L163.2 18.0L171.9 18.0L171.9 40.1L180.5 40.1L180.5 35.4L189.1 35.4L189.1 42.5L197.7 42.5L197.7 42.5L206.4 42.5L206.4 55.6L215.0 55.6L215.0 85.7L223.6 85.7L223.6 111.1L232.2 111.1L232.2 139.4L240.9 139.4L240.9 146.4L249.5 146.4L249.5 175.6L258.1 175.6L258.1 196.3L266.7 196.3L266.7 224.0L275.4 224.0L275.4 230.1L284.0 230.1L284.0 248.5L292.6 248.5L292.6 257.4L301.3 257.4L301.3 265.0L309.9 265.0L309.9 276.2L318.5 276.2L318.5 281.9L327.1 281.9L327.1 284.7L335.8 284.7L335.8 287.1L344.4 287.1L344.4 289.9L353.0 289.9L353.0 296Z" class="hist-fill"/><path d="M8.0 296L8.0 290.4L16.6 290.4L16.6 284.7L25.2 284.7L25.2 285.7L33.9 285.7L33.9 278.6L42.5 278.6L42.5 271.1L51.1 271.1L51.1 264.5L59.8 264.5L59.8 257.9L68.4 257.9L68.4 238.6L77.0 238.6L77.0 216.0L85.6 216.0L85.6 213.7L94.2 213.7L94.2 185.9L102.9 185.9L102.9 159.6L111.5 159.6L111.5 129.0L120.1 129.0L120.1 106.4L128.8 106.4L128.8 88.1L137.4 88.1L137.4 70.7L146.0 70.7L146.0 60.8L154.6 60.8L154.6 19.9L163.2 19.9L163.2 18.0L171.9 18.0L171.9 40.1L180.5 40.1L180.5 35.4L189.1 35.4L189.1 42.5L197.7 42.5L197.7 42.5L206.4 42.5L206.4 55.6L215.0 55.6L215.0 85.7L223.6 85.7L223.6 111.1L232.2 111.1L232.2 139.4L240.9 139.4L240.9 146.4L249.5 146.4L249.5 175.6L258.1 175.6L258.1 196.3L266.7 196.3L266.7 224.0L275.4 224.0L275.4 230.1L284.0 230.1L284.0 248.5L292.6 248.5L292.6 257.4L301.3 257.4L301.3 265.0L309.9 265.0L309.9 276.2L318.5 276.2L318.5 281.9L327.1 281.9L327.1 284.7L335.8 284.7L335.8 287.1L344.4 287.1L344.4 289.9L353.0 289.9L353.0 296" class="hist-line"/>
+<path d="M8.0 295.4L10.9 295.3L13.7 295.2L16.6 295.1L19.5 294.8L22.4 294.7L25.3 294.4L28.1 294.3L31.0 294.1L33.9 293.8L36.8 293.7L39.6 293.3L42.5 292.8L45.4 292.3L48.3 291.8L51.1 291.3L54.0 290.7L56.9 289.8L59.8 289.5L62.6 288.8L65.5 288.1L68.4 287.2L71.3 286.0L74.1 285.0L77.0 283.8L79.9 282.2L82.8 280.5L85.6 279.1L88.5 277.6L91.4 275.9L94.3 274.2L97.1 272.4L100.0 270.1L102.9 267.7L105.8 265.4L108.6 262.6L111.5 259.7L114.4 256.6L117.3 253.4L120.1 249.8L123.0 246.2L125.9 242.3L128.8 238.6L131.6 234.4L134.5 230.4L137.4 226.3L140.3 222.5L143.1 217.1L146.0 213.0L148.9 208.8L151.8 204.1L154.6 199.1L157.5 194.0L160.4 188.3L163.3 182.8L166.1 177.1L169.0 171.7L171.9 166.3L174.8 161.7L177.6 156.0L180.5 151.2L183.4 145.8L186.3 140.9L189.1 135.8L192.0 130.3L194.9 125.8L197.8 120.8L200.6 116.0L203.5 110.9L206.4 105.8L209.3 101.3L212.1 97.1L215.0 91.6L217.9 87.4L220.8 83.0L223.6 79.2L226.5 75.7L229.4 71.8L232.3 68.3L235.1 65.3L238.0 61.8L240.9 59.0L243.8 56.0L246.6 53.1L249.5 50.2L252.4 47.7L255.3 45.5L258.1 43.1L261.0 40.6L263.9 39.0L266.8 37.2L269.6 35.8L272.5 34.3L275.4 32.9L278.3 31.4L281.1 30.1L284.0 29.0L286.9 28.0L289.8 27.1L292.6 26.2L295.5 25.4L298.4 24.6L301.3 23.9L304.1 23.2L307.0 22.5L309.9 22.1L312.8 21.5L315.6 21.2L318.5 20.9L321.4 20.5L324.3 20.3L327.1 20.1L330.0 19.8L332.9 19.6L335.8 19.4L338.6 19.4L341.5 19.2L344.4 18.9L347.3 18.8L350.1 18.6L353.0 18.6" class="cdf"/>
+<line x1="130.4" y1="16" x2="130.4" y2="296" class="zrule"/><line x1="102.5" y1="16" x2="102.5" y2="296" class="prule"/><text x="106.5" y="28" class="plabel">P10</text><line x1="177.1" y1="16" x2="177.1" y2="296" class="prule"/><text x="181.1" y="28" class="plabel">P50</text><line x1="254.7" y1="16" x2="254.7" y2="296" class="prule"/><text x="258.7" y="28" class="plabel">P90</text><text x="8.0" y="318" class="ax neg" text-anchor="start">−$583k</text><text x="130.4" y="318" class="ax" text-anchor="middle">$0</text><text x="353.0" y="318" class="ax" text-anchor="end">$1.06m</text><text x="361" y="299.5" class="ax">0%</text><text x="361" y="160.5" class="ax">50%</text><text x="361" y="21.5" class="ax">100%</text>
+<text x="361" y="40" class="cdf-tag">CDF</text></svg></div>
+        <div class="results" id="results" aria-live="polite" aria-atomic="true">
+          <div class="big" id="r-median">Median NPV $223k</div>
+          <div class="line" id="r-line">P10 <span class="neg">−$133k</span> · P50 $223k · P90 $592k · P(NPV&lt;0) 21.6% · trials 10,000</div>
+          <div class="double-rule-inv close"></div>
+        </div>
+        <p class="ex-caption">Exhibit 2 — NPV distribution under correlated cost and revenue uncertainty. Method notes below.</p>
+      </div>
+    </div>
+    <p class="method">This is a small version of how projects get tested before anyone signs anything: put distributions on what you don't know, run the model ten thousand times, and read the spread of outcomes it produces. <span class="mono-note">Method — revenue and cost draw correlated normal shocks each year (Cholesky, ρ = 0.45; cost volatility 18%); both grow at the revenue growth rate over 12 years; cash flows discount at the chosen rate. Shock multipliers floor at zero, so revenue and cost cannot go negative. Seeded PRNG (Mulberry32, seed 42): the default run reproduces exactly, every time.</span></p>
+  </div>
+</section>
+
+<section id="elsewhere">
+  <div class="wrap">
+    <div class="sec-head"><span class="no">No. 04</span><h2>Elsewhere</h2><span class="rule"></span></div>
+    <div class="else-grid">
+      <div>
+        <h3><a href="https://www.cblanalytics.com">CBL Analytics</a></h3>
+        <p class="desc">The productised side of the practice. Company financial analysis extracted from SEC EDGAR filings, with source verification throughout.</p>
+        <p class="murl">cblanalytics.com</p>
+        <div class="blog-list">
+          <p class="bh">From the blog</p>
+          <div class="row"><a href="https://blog.cblanalytics.com/posts/2026-08-06-tropic-ridge-qra-sra/index.html">“Pricing Construction Risk — QRA and SRA analytics”</a><span class="d">AUG 2026</span></div>
+          <div class="row"><a href="https://blog.cblanalytics.com/posts/2026-07-31-a-model-you-can-regenerate/index.html">“A Model You Can Regenerate”</a><span class="d">JUL 2026</span></div>
+          <div class="row"><a href="https://blog.cblanalytics.com/posts/2026-01-09-vibe-analyst/index.html">“The Rise of the Vibe Analyst”</a><span class="d">JAN 2026</span></div>
+        </div>
+      </div>
+      <div class="idx-list">
+        <div class="row">
+          <div class="nm"><a href="https://github.com/spinbris">GitHub</a></div>
+          <div class="cl">Model engines and apps in R, Python and the odd Next.js.</div>
+          <div class="murl">github.com/spinbris</div>
+        </div>
+        <div class="row">
+          <div class="nm"><a href="https://www.kaggle.com/spinbris">Kaggle</a></div>
+          <div class="cl">Data-science projects and competitions.</div>
+          <div class="murl">kaggle.com/spinbris</div>
+        </div>
+        <div class="row">
+          <div class="nm"><a href="https://www.linkedin.com/in/stephen-parton-2737594/">LinkedIn</a></div>
+          <div class="cl">The long CV.</div>
+          <div class="murl">linkedin.com/in/stephen-parton-2737594</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap">
+    <div class="sec-head"><span class="no">No. 05</span><h2>About</h2><span class="rule"></span></div>
+    <div class="about-grid">
+      <div class="prose">
+        <p>I'm Steve Parton, a chartered accountant and MBA with thirty years in finance, banking and analytics. I've built the models and business cases behind big infrastructure decisions: expressways, bridges and water projects, ports, prisons, ferries in Brisbane and Dubai Creek, rail bids, a sugar mill cogeneration PPP. Later the work moved into banking risk and public-sector reporting: Basel II credit systems, IFRS 9 provisioning, ICAAP stress testing, Queensland Treasury financial statements.</p>
+        <p>The toolkit grew with the work. Excel and VBA first, because that's where finance lives; then R, Python, SQL and Power BI; now Quarto and Shiny for delivery. Three things never changed: assumptions written down, results that reproduce, and a model someone else can open and check.</p>
+        <p>These days the modelling team includes several Claudes. The judgement, and the review standards, are still mine.</p>
+      </div>
+      <div class="gap"></div>
+      <aside class="facts">
+        <p class="t">Notes</p>
+        <div class="row"><span class="k">Based</span><span class="v">Brisbane, Australia</span></div>
+        <div class="row"><span class="k">Practice</span><span class="v">SJP Consulting</span></div>
+        <div class="row"><span class="k">Status</span><span class="v">Taking engagements</span></div>
+        <div class="row"><span class="k">Tools</span><span class="v">Excel and VBA, R, Python, SQL, Power BI, Quarto, Shiny</span></div>
+        <div class="row"><span class="k">Also</span><span class="v">CBL Analytics — productised analysis apps</span></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="contact">
+  <div class="wrap">
+    <p class="closing">If the decision matters, the model should hold up.</p>
+    <div class="rule-wrap"><div class="double-rule-inv"></div></div>
+    <p class="corr">Correspondence</p>
+    <a class="email" href="mailto:stephen.parton@sjpconsulting.com">stephen.parton@sjpconsulting.com</a>
+    <p class="phone"><a href="tel:+61412338370" style="text-decoration:none">+61 412 338 370</a></p>
+    <p class="loc">Brisbane, Australia</p>
+    <p class="colophon">SJP Consulting · Brisbane, Australia · ABN 97 543 127 136<br>
+    Set in Newsreader and IBM Plex Mono. Static exhibits generated by the same seeded engine that runs live. No framework, no analytics, readable without JavaScript. © 2026 SJP Consulting.</p>
+  </div>
+</section>
+
+<script>
+// SJP Consulting — Exhibit engine. Shared by the build step (Node) and the live page.
+// Seeded PRNG: the static build-time SVGs and the live default run agree exactly on V8
+// (Node and Chrome); other engines agree to display precision.
+
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+// Box-Muller pair from a uniform source
+function gaussPair(rng) {
+  let u = 0, v = 0;
+  while (u === 0) u = rng();
+  while (v === 0) v = rng();
+  const m = Math.sqrt(-2 * Math.log(u));
+  return [m * Math.cos(2 * Math.PI * v), m * Math.sin(2 * Math.PI * v)];
+}
+
+const DEFAULTS = {
+  capex: 1600000,   // initial outlay, year 0
+  rev0: 500000,     // year-1 revenue
+  cost0: 260000,    // year-1 operating cost
+  growth: 0.025,    // p.a., applies to revenue and cost
+  rate: 0.10,       // discount rate
+  revVol: 0.28,     // revenue volatility (s.d. as share of expected)
+  costVol: 0.18,    // cost volatility
+  rho: 0.45,        // revenue-cost correlation (Cholesky)
+  years: 12,
+  trials: 10000,
+  seed: 42,
+};
+
+// Core simulation. Shock multipliers floored at zero: revenue and cost cannot go negative.
+function simulate(p) {
+  const { capex, rev0, cost0, growth, rate, revVol, costVol, rho, years, trials, seed } = p;
+  const rng = mulberry32(seed);
+  const chol = Math.sqrt(1 - rho * rho); // Cholesky factor for 2x2
+  const npv = new Float64Array(trials);
+  const cum = new Float64Array(trials * (years + 1));
+  const disc = new Float64Array(years + 1);
+  for (let t = 1; t <= years; t++) disc[t] = 1 / Math.pow(1 + rate, t);
+
+  for (let i = 0; i < trials; i++) {
+    let acc = -capex;
+    cum[i * (years + 1)] = acc;
+    for (let t = 1; t <= years; t++) {
+      const [z1, z2] = gaussPair(rng);
+      const zc = rho * z1 + chol * z2; // correlated cost shock
+      const g = Math.pow(1 + growth, t - 1);
+      const rev = rev0 * g * Math.max(0, 1 + revVol * z1);
+      const cost = cost0 * g * Math.max(0, 1 + costVol * zc);
+      acc += (rev - cost) * disc[t];
+      cum[i * (years + 1) + t] = acc;
+    }
+    npv[i] = acc;
+  }
+  return { npv, cum };
+}
+
+function quantileSorted(sorted, q) {
+  const idx = (sorted.length - 1) * q;
+  const lo = Math.floor(idx), hi = Math.ceil(idx);
+  return sorted[lo] + (sorted[hi] - sorted[lo]) * (idx - lo);
+}
+
+function stats(npvArr) {
+  const s = Float64Array.from(npvArr).sort();
+  let neg = 0, sum = 0;
+  for (let i = 0; i < s.length; i++) { sum += s[i]; if (s[i] < 0) neg++; }
+  return {
+    p10: quantileSorted(s, 0.10),
+    p50: quantileSorted(s, 0.50),
+    p90: quantileSorted(s, 0.90),
+    mean: sum / s.length,
+    probNeg: neg / s.length,
+    sorted: s,
+  };
+}
+
+function fmtM(x) {
+  const sign = x < 0 ? '−' : '';
+  const a = Math.abs(x);
+  const k = Math.round(a / 1e3);
+  if (k === 0) return '$0';
+  if (k >= 1000) return sign + '$' + (a / 1e6).toFixed(2) + 'm';
+  return sign + '$' + k + 'k';
+}
+
+function tickText(x, y, v, anchor) {
+  const cls = v < 0 ? 'ax neg' : 'ax';
+  const a = anchor ? ` text-anchor="${anchor}"` : '';
+  return `<text x="${x}" y="${y}" class="${cls}"${a}>${fmtM(v)}</text>`;
+}
+
+// ---------- Exhibit 1: fan of cumulative-NPV percentile paths ----------
+function exhibit1SVG(sim, p, opts) {
+  const o = Object.assign({ W: 1140, H: 200, cls: 'ex1 ex-d', padR: 64 }, opts || {});
+  const { W, H, cls } = o;
+  const padL = 6, padR = o.padR, padT = 8, padB = 20;
+  const { years, trials } = p;
+  const cols = years + 1;
+  const perYear = [];
+  for (let t = 0; t < cols; t++) {
+    const col = new Float64Array(trials);
+    for (let i = 0; i < trials; i++) col[i] = sim.cum[i * cols + t];
+    perYear.push(col.sort());
+  }
+  const lo = Math.min(...perYear.map(c => quantileSorted(c, 0.005)));
+  const hi = Math.max(...perYear.map(c => quantileSorted(c, 0.995)));
+  const x = t => padL + (t / years) * (W - padL - padR);
+  const y = v => padT + (1 - (v - lo) / (hi - lo)) * (H - padT - padB);
+
+  const levels = [];
+  for (let i = 1; i <= 60; i++) levels.push((i - 0.5) / 60);
+  let paths = '';
+  for (const q of levels) {
+    let d = '';
+    for (let t = 0; t < cols; t++) {
+      const v = quantileSorted(perYear[t], q);
+      d += (t ? 'L' : 'M') + x(t).toFixed(1) + ' ' + y(v).toFixed(1);
+    }
+    paths += `<path d="${d}" class="fan-line"/>`;
+  }
+  let dmed = '';
+  for (let t = 0; t < cols; t++) {
+    dmed += (t ? 'L' : 'M') + x(t).toFixed(1) + ' ' + y(quantileSorted(perYear[t], 0.5)).toFixed(1);
+  }
+  // y-scale annotations: multiples of $0.5m within range, thinned to min / 0 / max
+  const step = 500000;
+  const mults = [];
+  for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) mults.push(v);
+  const yVals = [...new Set([mults[0], 0, mults[mults.length - 1]])].filter(v => v >= lo && v <= hi);
+  const fmtShort = v => {
+    if (v === 0) return '$0';
+    const sign = v < 0 ? '−' : '';
+    const a = Math.abs(v);
+    return a >= 1e6 ? sign + '$' + (a / 1e6).toFixed(1) + 'm' : sign + '$' + Math.round(a / 1e3) + 'k';
+  };
+  let yAnn = '', yGrid = '';
+  for (const v of yVals) {
+    const yy = y(v).toFixed(1);
+    if (v === 0) {
+      yGrid += `<line x1="${padL}" y1="${yy}" x2="${W - padR}" y2="${yy}" class="zero"/>`;
+    } else {
+      yGrid += `<line x1="${padL}" y1="${yy}" x2="${W - padR}" y2="${yy}" class="grid"/>`;
+    }
+    const cls = v < 0 ? 'ax neg' : 'ax';
+    yAnn += `<text x="${W - padR + 8}" y="${(+yy + 3.5).toFixed(1)}" class="${cls}" text-anchor="start">${fmtShort(v)}</text>`;
+  }
+  const yrTicks = [0, 4, 8, years].map(t =>
+    `<text x="${x(t).toFixed(1)}" y="${H - 4}" class="ax"${t === years ? ' text-anchor="end"' : ''}>${t}</text>`).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Fan chart of cumulative NPV percentile paths over ${years} years" class="${cls}">
+${yGrid}${paths}<path d="${dmed}" class="fan-median"/>
+${yrTicks}${yAnn}</svg>`;
+}
+
+// ---------- Exhibit 2: NPV histogram + CDF ----------
+function exhibit2SVG(st, p, opts) {
+  const o = Object.assign({ W: 720, H: 400, cls: 'ex2 ex-d' }, opts || {});
+  const { W, H, cls } = o;
+  const padL = 8, padR = Math.round(W * 0.075) + 8, padT = 18, padB = 34;
+  const s = st.sorted, n = s.length;
+  const lo = quantileSorted(s, 0.002), hi = quantileSorted(s, 0.998);
+  const BINS = 40, bw = (hi - lo) / BINS;
+  const counts = new Array(BINS).fill(0);
+  for (let i = 0; i < n; i++) {
+    const b = Math.floor((s[i] - lo) / bw);
+    if (b < 0 || b >= BINS) continue; // drop the clipped 0.4% tails; the CDF carries tail mass
+    counts[b]++;
+  }
+  const cmax = Math.max(...counts);
+  const x = v => padL + ((v - lo) / (hi - lo)) * (W - padL - padR);
+  const yh = c => padT + (1 - c / cmax) * (H - padT - padB);
+  const base = (H - padB);
+
+  let dOut = `M${x(lo).toFixed(1)} ${base}`;
+  for (let b = 0; b < BINS; b++) {
+    const x0 = x(lo + b * bw), x1 = x(lo + (b + 1) * bw), yy = yh(counts[b]);
+    dOut += `L${x0.toFixed(1)} ${yy.toFixed(1)}L${x1.toFixed(1)} ${yy.toFixed(1)}`;
+  }
+  dOut += `L${x(hi).toFixed(1)} ${base}`;
+  const dFill = dOut + 'Z';
+
+  let dCdf = '';
+  const STEPS = 120;
+  for (let i = 0; i <= STEPS; i++) {
+    const v = lo + (i / STEPS) * (hi - lo);
+    let a = 0, b2 = n;
+    while (a < b2) { const m = (a + b2) >> 1; if (s[m] <= v) a = m + 1; else b2 = m; }
+    const f = a / n;
+    const yy = padT + (1 - f) * (H - padT - padB);
+    dCdf += (i ? 'L' : 'M') + x(v).toFixed(1) + ' ' + yy.toFixed(1);
+  }
+
+  let grid = '';
+  for (let i = 1; i <= 3; i++) {
+    const gy = padT + (i / 4) * (H - padT - padB);
+    grid += `<line x1="${padL}" y1="${gy.toFixed(1)}" x2="${W - padR}" y2="${gy.toFixed(1)}" class="grid"/>`;
+  }
+
+  const rules = [['P10', st.p10], ['P50', st.p50], ['P90', st.p90]].map(([lbl, v]) =>
+    `<line x1="${x(v).toFixed(1)}" y1="${padT - 2}" x2="${x(v).toFixed(1)}" y2="${base}" class="prule"/>` +
+    `<text x="${(x(v) + 4).toFixed(1)}" y="${padT + 10}" class="plabel">${lbl}</text>`
+  ).join('');
+
+  const zero = (lo < 0 && hi > 0)
+    ? `<line x1="${x(0).toFixed(1)}" y1="${padT - 2}" x2="${x(0).toFixed(1)}" y2="${base}" class="zrule"/>`
+    : '';
+
+  const midV = (lo < 0 && hi > 0) ? 0 : (lo + hi) / 2;
+  const ticks =
+    tickText(x(lo).toFixed(1), H - 12, lo, 'start') +
+    tickText(x(midV).toFixed(1), H - 12, midV, 'middle') +
+    tickText(x(hi).toFixed(1), H - 12, hi, 'end');
+  const cdfAx = [0, 0.5, 1].map(f => {
+    const yy = padT + (1 - f) * (H - padT - padB);
+    return `<text x="${W - padR + 8}" y="${(yy + 3.5).toFixed(1)}" class="ax">${(f * 100).toFixed(0)}%</text>`;
+  }).join('');
+
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Histogram of simulated NPV outcomes with cumulative distribution overlay" class="${cls}">
+${grid}<line x1="${padL}" y1="${base}" x2="${W - padR}" y2="${base}" class="baseline"/>
+<path d="${dFill}" class="hist-fill"/><path d="${dOut}" class="hist-line"/>
+<path d="${dCdf}" class="cdf"/>
+${zero}${rules}${ticks}${cdfAx}
+<text x="${W - padR + 8}" y="${padT + 22}" class="cdf-tag">CDF</text></svg>`;
+}
+
+function runAll(params) {
+  const p = Object.assign({}, DEFAULTS, params || {});
+  const sim = simulate(p);
+  const st = stats(sim.npv);
+  return { p, sim, st };
+}
+
+if (typeof module !== 'undefined') {
+  module.exports = { DEFAULTS, simulate, stats, fmtM, exhibit1SVG, exhibit2SVG, runAll, quantileSorted };
+} else if (typeof window !== 'undefined') {
+  window.SJPX = { DEFAULTS, simulate, stats, fmtM, exhibit1SVG, exhibit2SVG, runAll, quantileSorted };
+}
+
+</script>
+<script>
+(function(){
+  // theme toggle — inserted by JS so no-JS users never see a dead control.
+  // OS preference is read live (never snapshotted); an explicit data-theme wins both ways.
+  var nav = document.getElementById('topnav');
+  var btn = document.createElement('button');
+  btn.className = 'theme-toggle';
+  var mq = window.matchMedia('(prefers-color-scheme: dark)');
+  function isDark(){
+    var t = document.documentElement.getAttribute('data-theme');
+    return t ? t === 'dark' : mq.matches;
+  }
+  function paint(){
+    // action-labelled button: the text names the mode it switches TO; no aria-pressed
+    btn.textContent = isDark() ? 'Light' : 'Dark';
+    btn.setAttribute('aria-label', isDark() ? 'Switch to light mode' : 'Switch to dark mode');
+  }
+  btn.addEventListener('click', function(){
+    document.documentElement.setAttribute('data-theme', isDark() ? 'light' : 'dark');
+    paint();
+  });
+  if (mq.addEventListener) mq.addEventListener('change', paint);
+  nav.appendChild(btn); paint();
+
+  // live model — runs only on activation, never on load or scroll
+  var X = window.SJPX;
+  var run = document.getElementById('run');
+  run.hidden = false;
+  var fields = {
+    capex: { el: document.getElementById('in-capex'), out: document.getElementById('v-capex'), fmt: function(v){ return '$' + (v/1e6).toFixed(2) + 'm'; } },
+    growth:{ el: document.getElementById('in-growth'), out: document.getElementById('v-growth'), fmt: function(v){ return v.toFixed(2) + '%'; } },
+    rate:  { el: document.getElementById('in-rate'), out: document.getElementById('v-rate'), fmt: function(v){ return v.toFixed(2) + '%'; } },
+    vol:   { el: document.getElementById('in-vol'), out: document.getElementById('v-vol'), fmt: function(v){ return v.toFixed(2) + '%'; } },
+  };
+  Object.keys(fields).forEach(function(k){
+    var f = fields[k];
+    function sync(){
+      var v = +f.el.value, s = f.fmt(k === 'capex' ? v : v);
+      f.out.textContent = s;
+      f.el.setAttribute('aria-valuetext', s);
+    }
+    f.el.addEventListener('input', sync);
+    sync();
+  });
+  function redink(s){ return s.replace(/−\$[\d.,]+[mk]?/g, function(m){ return '<span class="neg">' + m + '</span>'; }); }
+  run.addEventListener('click', function(){
+    var params = {
+      capex: +fields.capex.el.value,
+      growth: (+fields.growth.el.value)/100,
+      rate: (+fields.rate.el.value)/100,
+      revVol: (+fields.vol.el.value)/100,
+    };
+    var out = X.runAll(params);
+    document.getElementById('ex2-slot').innerHTML =
+      X.exhibit2SVG(out.st, out.p, { W: 720, H: 400, cls: 'ex2 ex-d' }) +
+      X.exhibit2SVG(out.st, out.p, { W: 390, H: 330, cls: 'ex2 ex-m' });
+    document.getElementById('r-median').innerHTML = redink('Median NPV ' + X.fmtM(out.st.p50));
+    document.getElementById('r-line').innerHTML = redink(
+      'P10 ' + X.fmtM(out.st.p10) + ' · P50 ' + X.fmtM(out.st.p50) + ' · P90 ' + X.fmtM(out.st.p90) +
+      ' · P(NPV&lt;0) ' + (out.st.probNeg*100).toFixed(1) + '% · trials 10,000');
+  });
+})();
+
+</script>
+</body>
+</html>
