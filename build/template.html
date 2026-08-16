@@ -71,6 +71,11 @@ nav.top a:hover, nav.top a:focus-visible, .theme-toggle:hover{
 }
 .theme-toggle{ background:none; border:none; border-left:1px solid var(--border); cursor:pointer; padding:0 0 0 28px; }
 @media(max-width:720px){ .masthead{ height:auto; padding:14px 0; } nav.top{ gap:18px; } }
+/* ============ cross-reference band (CBL Analytics) ============ */
+.crossref{ font-family:var(--mono); font-size:13px; line-height:22px; color:var(--muted); margin:0; padding:16px 0; border-bottom:1px solid var(--border); }
+.crossref a{ color:var(--ink); text-decoration:underline; text-underline-offset:3px; text-decoration-thickness:1px; }
+.crossref a:hover{ color:var(--accent); }
+.cr-tag{ font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-right:8px; }
 /* ============ hero ============ */
 .hero{ padding-top:96px; }
 .kicker{ font-family:var(--mono); font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
@@ -235,10 +240,14 @@ svg.ex2{ display:block; width:100%; height:auto; }
   </header>
 </div>
 
+<div class="wrap">
+  <p class="crossref"><span class="cr-tag">Also at</span><a href="https://www.cblanalytics.com">CBL Analytics</a>, where most of my current work lives: AI-assisted analytics, currently automating DCF financial models and construction-risk QRA/SRA.</p>
+</div>
+
 <div class="wrap hero" id="top">
   <p class="kicker">Brisbane, Australia · Corporate finance · Analytics · Risk</p>
   <h1>The model is the tool. <br class="h1br">The analysis is the work.</h1>
-  <p class="subhead">Independent analytics for governments, infrastructure sponsors and banks. The models are increasingly generated from code, and no serious analysis happens without AI now: a good thing, because it does the heavy lifting and leaves more time for judgement. The value is in the analysis on top, and thirty years of knowing which questions to ask.</p>
+  <p class="subhead">Independent analytics for governments, infrastructure sponsors and banks. The models are increasingly generated from code, and no serious analysis happens without AI now, which is a good thing as it leaves more time for the design and actual analysis. And the value is in this analysis on top and knowing which questions to ask, not in whatever tools might be used.</p>
   <p class="fact-strip">Expressways · Ports · Prisons · Ferries · Rail bids · Basel II · IFRS 9 · APRA ICAAP · Treasury FRR</p>
   <div class="hero-links">
     <a href="#work">Selected work</a>
@@ -259,7 +268,7 @@ svg.ex2{ display:block; width:100%; height:auto; }
       <div>
         <span class="idx">01</span>
         <h3>Corporate finance and business cases</h3>
-        <p>Business cases, delivery-options analyses, tolling and patronage models, bid models, hurdle-rate reviews. Investment-grade DCF models with assumption books, documented so a board, lender or Treasury reviewer can open a cell and see how a number was built. Mergers, acquisitions and restructures.</p>
+        <p>Business cases, delivery-options analyses, tolling and patronage models, bid models, hurdle-rate reviews. Investment-grade DCF models with assumption books, documented so a board, lender or auditor can open a cell and see how a number was built. Mergers, acquisitions and restructures.</p>
         <a href="#work">See the work</a>
       </div>
       <div>
@@ -288,22 +297,21 @@ svg.ex2{ display:block; width:100%; height:auto; }
         <tr><th scope="col">Field</th><th scope="col">Engagement</th><th scope="col" style="text-align:right">Output</th></tr>
       </thead>
       <tbody>
-        <tr><td class="f">Infrastructure</td><td class="e"><div class="name">Brisbane expressway, bridge and water projects</div><div class="detail">Financial models for delivery and funding decisions.</div></td><td class="o">Model</td></tr>
-        <tr><td class="f">Government</td><td class="e"><div class="name">Government financial statements (FRR) model</div><div class="detail">Financial Reporting Requirements statements delivered through Power BI and Quarto over an Excel and VBA core.</div></td><td class="o">Model</td></tr>
+        <tr><td class="f">Infrastructure</td><td class="e"><div class="name">Brisbane expressway, bridge and water projects</div><div class="detail">Financial models for preliminary evaluations and business cases.</div></td><td class="o">Model</td></tr>
+        <tr><td class="f">Government</td><td class="e"><div class="name">Government financial statements (FRR) model</div><div class="detail">Financial Statements delivered through MS Word from an Excel and VBA core.</div></td><td class="o">Model</td></tr>
         <tr><td class="f">Banking</td><td class="e"><div class="name">IFRS 9 provisioning system</div><div class="detail">Built as an Azure and R web application for an overseas credit agency.</div></td><td class="o">System</td></tr>
-        <tr><td class="f">Transport</td><td class="e"><div class="name">Ferry operations, Brisbane and Dubai Creek</div><div class="detail">Operating and financial analysis for council and overseas operators.</div></td><td class="o">Analysis</td></tr>
-        <tr><td class="f">Government</td><td class="e"><div class="name">Queensland Treasury FRR financial statements model</div><div class="detail">Excel, VBA and Power Query, under the Financial Reporting Requirements.</div></td><td class="o">Model</td></tr>
+        <tr><td class="f">Transport</td><td class="e"><div class="name">Ferry operations, Brisbane and overseas</div><div class="detail">Operating and financial analyses for stakeholders.</div></td><td class="o">Analysis</td></tr>
         <tr><td class="f">Banking</td><td class="e"><div class="name">APRA CPS 226 swaps margining</div><div class="detail">Initial-margin compliance for non-centrally cleared derivatives.</div></td><td class="o">System</td></tr>
         <tr><td class="f">Infrastructure</td><td class="e"><div class="name">Correctional facility evaluation</div><div class="detail">Delivery options and financial evaluation.</div></td><td class="o">Evaluation</td></tr>
-        <tr><td class="f">Corporate</td><td class="e"><div class="name">Finance Director, medical-device startup</div><div class="detail">Forecasts for Information Memoranda; finance function built out, Xero to NetSuite.</div></td><td class="o">FD role</td></tr>
+        <tr><td class="f">Corporate</td><td class="e"><div class="name">Finance Director, medical-device startup</div><div class="detail">Information Memoranda; finance function built out, Xero to NetSuite.</div></td><td class="o">FD role</td></tr>
         <tr><td class="f">Transport</td><td class="e"><div class="name">Rail bid models and sourcing strategies</div><div class="detail">Procurement-side models and sourcing evaluation.</div></td><td class="o">Model</td></tr>
         <tr><td class="f">Banking</td><td class="e"><div class="name">Basel II credit risk system</div><div class="detail">APRA-compliant PD, LGD and expected-loss framework.</div></td><td class="o">System</td></tr>
-        <tr><td class="f">Energy</td><td class="e"><div class="name">Sugar mill cogeneration PPP</div></td><td class="o">Model</td></tr>
-        <tr><td class="f">Infrastructure</td><td class="e"><div class="name">Port of Townsville commercial facilities options</div></td><td class="o">Analysis</td></tr>
+        <tr><td class="f">Energy</td><td class="e"><div class="name">Sugar mill cogeneration project evaluations</div></td><td class="o">Model</td></tr>
+        <tr><td class="f">Infrastructure</td><td class="e"><div class="name">Commercial port facilities options evaluations</div></td><td class="o">Analysis</td></tr>
         <tr><td class="f">Banking</td><td class="e"><div class="name">APRA ICAAP stress testing</div><div class="detail">Capital stress testing for an Australian mutual.</div></td><td class="o">Analysis</td></tr>
       </tbody>
     </table>
-    <p class="ledger-foot">† n = 13 of a longer record. Some clients prefer their models stay private. References on request.</p>
+    <p class="ledger-foot">† a selection of a much longer list of engagements.</p>
   </div>
 </section>
 
@@ -352,7 +360,7 @@ svg.ex2{ display:block; width:100%; height:auto; }
     <div class="else-grid">
       <div>
         <h3><a href="https://www.cblanalytics.com">CBL Analytics</a></h3>
-        <p class="desc">The productised side of the practice. Company financial analysis extracted from SEC EDGAR filings, with source verification throughout.</p>
+        <p class="desc">The AI side of the practice: automating DCF financial models, construction-risk QRA/SRA analytics, and SEC filing analysis, source-verified throughout.</p>
         <p class="murl">cblanalytics.com</p>
         <div class="blog-list">
           <p class="bh">From the blog</p>
